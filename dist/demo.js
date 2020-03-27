@@ -23,13 +23,21 @@ game.getResourceManager().loadScene(DESERT_SCENE_PATH, game.getSceneGraph(), gam
     var world = game.getSceneGraph().getTiledLayers();
     var worldWidth = world[0].getColumns() * world[0].getTileSet().getTileWidth();
     var worldHeight = world[0].getRows() * world[0].getTileSet().getTileHeight();
-    for (var i = 0; i < 100; i++) {
-        var type = game.getResourceManager().getAnimatedSpriteType("RED_CIRCLE_MAN");
-        var randomSprite = new AnimatedSprite_1.AnimatedSprite(type, "FORWARD");
+    for (var i = 0; i < 50; i++) {
+        var type = game.getResourceManager().getAnimatedSpriteType("COCKROACH");
+        var randomSprite = new AnimatedSprite_1.AnimatedSprite(type, "IDLE");
         var randomX = Math.random() * worldWidth;
         var randomY = Math.random() * worldHeight;
         randomSprite.getPosition().set(randomX, randomY, 0, 1);
         game.getSceneGraph().addAnimatedSprite(randomSprite);
+    }
+    for (var _i = 0; _i < 50; _i++) {
+        var _type = game.getResourceManager().getAnimatedSpriteType("CAMEL_SPIDER");
+        var _randomSprite = new AnimatedSprite_1.AnimatedSprite(_type, "IDLE");
+        var _randomX = Math.random() * worldWidth;
+        var _randomY = Math.random() * worldHeight;
+        _randomSprite.getPosition().set(_randomX, _randomY, 0, 1);
+        game.getSceneGraph().addAnimatedSprite(_randomSprite);
     }
     // NOW ADD TEXT RENDERING. WE ARE GOING TO RENDER 3 THINGS:
     // NUMBER OF SPRITES IN THE SCENE
@@ -2050,10 +2058,23 @@ var WebGLGameSpriteRenderer = function (_WebGLGameRenderingCo) {
             var defaultHeight = canvasHeight;
             var scaleX = 2 * spriteWidth / defaultWidth;
             var scaleY = 2 * spriteHeight / defaultHeight;
-            this.meshScale.set(scaleX, scaleY, 0.0, 0.0); //1.0, 1.0);
+            this.meshScale.set(scaleX, scaleY, 0.0, 0.0); //1.0, 1.0); //ugh 
+            this.meshRotate.set(0.0, 0.0, 3.1415, 0.0);
+            // let rotation = [0, 1];
             // @todo - COMBINE THIS WITH THE ROTATE AND SCALE VALUES FROM THE SPRITE
             MathUtilities_1.MathUtilities.identity(this.meshTransform);
             MathUtilities_1.MathUtilities.model(this.meshTransform, this.meshTranslate, this.meshRotate, this.meshScale);
+            // console.log(this.meshTransform);
+            // MathUtilities.transpose(this.meshTransform, this.meshTransform);
+            // //rotation
+            // // rotation around center
+            // MathUtilities.identity(this.meshTransform);
+            // let tempVector: Vector3 = new Vector3();
+            // tempVector.set(texture.width * 0.5, texture.height * 0.5, 0, 0);
+            // MathUtilities.translate(this.meshTransform, tempVector);
+            // MathUtilities.rotate(this.meshTransform, this.meshRotate);
+            // tempVector.set(texture.width * -0.5, texture.height * -0.5, 0, 0);
+            // MathUtilities.translate(this.meshTransform, tempVector);
             // FIGURE OUT THE TEXTURE COORDINATE FACTOR AND SHIFT
             var texCoordFactorX = spriteWidth / texture.width;
             var texCoordFactorY = spriteHeight / texture.height;
@@ -2080,6 +2101,9 @@ var WebGLGameSpriteRenderer = function (_WebGLGameRenderingCo) {
             webGL.uniform2f(u_TexCoordFactorLocation, texCoordFactorX, texCoordFactorY);
             var u_TexCoordShiftLocation = this.webGLUniformLocations.get(this.U_TEX_COORD_SHIFT);
             webGL.uniform2f(u_TexCoordShiftLocation, texCoordShiftX, texCoordShiftY);
+            // Rotation
+            // let u_RotationLocation: WebGLUniformLocation = this.webGLAttributeLocations.get(this.U_ROTATION);
+            // webGL.uniform2fv(u_RotationLocation, rotation);
             // DRAW THE SPRITE AS A TRIANGLE STRIP USING 4 VERTICES, STARTING AT THE START OF THE ARRAY (index 0)
             webGL.drawArrays(webGL.TRIANGLE_STRIP, this.INDEX_OF_FIRST_VERTEX, this.NUM_VERTICES);
         }
@@ -2933,7 +2957,6 @@ var UIController = function UIController(canvasId, initScene) {
             if (_this.keys.indexOf(code) == -1) {
                 _this.keys.push(code);
             }
-            // this.keybaordPressHeld(event);
         }
     };
     this.keybaordPressHeld = function (event) {
@@ -2962,7 +2985,6 @@ var UIController = function UIController(canvasId, initScene) {
     this.keybaordPressUp = function (event) {
         var code = event.code;
         _this.keys.splice(_this.keys.indexOf(code), 1);
-        // this.keybaordPressHeld(event);
     };
     this.spriteToDrag = null;
     this.scene = initScene;

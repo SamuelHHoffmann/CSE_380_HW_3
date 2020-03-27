@@ -4,6 +4,7 @@ import { AnimatedSprite } from '../scene/sprite/AnimatedSprite'
 import { AnimatedSpriteType } from '../scene/sprite/AnimatedSpriteType'
 import { WebGLGameTexture } from './WebGLGameTexture'
 import { Viewport } from '../scene/Viewport'
+import { Vector3 } from '../math/Vector3'
 
 export class WebGLGameSpriteRenderer extends WebGLGameRenderingComponent {
 
@@ -64,11 +65,33 @@ export class WebGLGameSpriteRenderer extends WebGLGameRenderingComponent {
         let defaultHeight: number = canvasHeight;
         let scaleX: number = 2 * spriteWidth / defaultWidth;
         let scaleY: number = 2 * spriteHeight / defaultHeight;
-        this.meshScale.set(scaleX, scaleY, 0.0, 0.0);//1.0, 1.0);
+        this.meshScale.set(scaleX, scaleY, 0.0, 0.0);//1.0, 1.0); //stretching issue here.
+
+
+        this.meshRotate.set(0.0, 0.0, 3.1415, 0.0); // rotate on z axis
+
+        // let rotation = [0, 1];
 
         // @todo - COMBINE THIS WITH THE ROTATE AND SCALE VALUES FROM THE SPRITE
         MathUtilities.identity(this.meshTransform);
         MathUtilities.model(this.meshTransform, this.meshTranslate, this.meshRotate, this.meshScale);
+
+        // console.log(this.meshTransform);
+
+        // MathUtilities.transpose(this.meshTransform, this.meshTransform);
+
+        // //rotation
+
+
+        // // rotation around center
+        // MathUtilities.identity(this.meshTransform);
+        // let tempVector: Vector3 = new Vector3();
+        // tempVector.set(texture.width * 0.5, texture.height * 0.5, 0, 0);
+        // MathUtilities.translate(this.meshTransform, tempVector);
+        // MathUtilities.rotate(this.meshTransform, this.meshRotate);
+        // tempVector.set(texture.width * -0.5, texture.height * -0.5, 0, 0);
+        // MathUtilities.translate(this.meshTransform, tempVector);
+
 
         // FIGURE OUT THE TEXTURE COORDINATE FACTOR AND SHIFT
         let texCoordFactorX: number = spriteWidth / texture.width;
@@ -77,6 +100,10 @@ export class WebGLGameSpriteRenderer extends WebGLGameRenderingComponent {
         let spriteTop: number = sprite.getTop();
         let texCoordShiftX: number = spriteLeft / texture.width;
         let texCoordShiftY: number = spriteTop / texture.height;
+
+
+
+
 
         // USE THE ATTRIBUTES
         webGL.bindBuffer(webGL.ARRAY_BUFFER, this.vertexDataBuffer);
@@ -93,12 +120,20 @@ export class WebGLGameSpriteRenderer extends WebGLGameRenderingComponent {
         // USE THE UNIFORMS
         let u_MeshTransformLocation: WebGLUniformLocation = this.webGLUniformLocations.get(this.U_MESH_TRANSFORM);
         webGL.uniformMatrix4fv(u_MeshTransformLocation, false, this.meshTransform.getData());
+
         let u_SamplerLocation: WebGLUniformLocation = this.webGLUniformLocations.get(this.U_SAMPLER);
         webGL.uniform1i(u_SamplerLocation, texture.webGLTextureId);
+
         let u_TexCoordFactorLocation: WebGLUniformLocation = this.webGLUniformLocations.get(this.U_TEX_COORD_FACTOR);
         webGL.uniform2f(u_TexCoordFactorLocation, texCoordFactorX, texCoordFactorY);
+
         let u_TexCoordShiftLocation: WebGLUniformLocation = this.webGLUniformLocations.get(this.U_TEX_COORD_SHIFT);
         webGL.uniform2f(u_TexCoordShiftLocation, texCoordShiftX, texCoordShiftY);
+
+        // Rotation
+        // let u_RotationLocation: WebGLUniformLocation = this.webGLAttributeLocations.get(this.U_ROTATION);
+        // webGL.uniform2fv(u_RotationLocation, rotation);
+
 
         // DRAW THE SPRITE AS A TRIANGLE STRIP USING 4 VERTICES, STARTING AT THE START OF THE ARRAY (index 0)
         webGL.drawArrays(webGL.TRIANGLE_STRIP, this.INDEX_OF_FIRST_VERTEX, this.NUM_VERTICES);

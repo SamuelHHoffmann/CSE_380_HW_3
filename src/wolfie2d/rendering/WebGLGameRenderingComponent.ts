@@ -42,9 +42,9 @@ export abstract class WebGLGameRenderingComponent {
     }
 
     public init(webGL: WebGLRenderingContext,
-                vertexShaderSource: string,
-                fragmentShaderSource: string,
-                renderSetupData: object): void {
+        vertexShaderSource: string,
+        fragmentShaderSource: string,
+        renderSetupData: object): void {
         // FIRST WE NEED TO MAKE THE SHADER
         this.shader = new WebGLGameShader();
         this.shader.init(webGL, vertexShaderSource, fragmentShaderSource);
@@ -56,7 +56,7 @@ export abstract class WebGLGameRenderingComponent {
         webGL.bindBuffer(webGL.ARRAY_BUFFER, this.vertexDataBuffer);
 
         // MAKE THE MESH DATA OURSELVES IN A CHILD CLASS
-        let meshVertexData : Float32Array = this.getVertexData(renderSetupData);
+        let meshVertexData: Float32Array = this.getVertexData(renderSetupData);
 
         // AND SEND THE DATA TO THE BUFFER WE CREATED ON THE GPU
         webGL.bufferData(webGL.ARRAY_BUFFER, meshVertexData, webGL.STATIC_DRAW);
@@ -66,7 +66,7 @@ export abstract class WebGLGameRenderingComponent {
         this.loadUniformLocations(webGL, this.getShaderUniformNames());
     }
 
-    public abstract getVertexData(renderData : object) : Float32Array;
+    public abstract getVertexData(renderData: object): Float32Array;
     public abstract getShaderAttributeNames(): string[];
     public abstract getShaderUniformNames(): string[];
 

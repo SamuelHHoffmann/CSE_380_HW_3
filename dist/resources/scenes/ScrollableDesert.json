@@ -8,6 +8,10 @@
     ],
     "spriteTypePaths" : [
         {"name":"MULTI_COLOR_BLOCK", "path" : "resources/animated_sprites/MultiColorBlock/MultiColorBlock.json"},
-        {"name":"RED_CIRCLE_MAN", "path" : "resources/animated_sprites/RedCircleMan/RedCircleMan.json" }
+        {"name":"RED_CIRCLE_MAN", "path" : "resources/animated_sprites/RedCircleMan/RedCircleMan.json" },
+        {"name":"COCKROACH", "path" : "resources/animated_sprites/cockroach/cockroach.json" },
+        {"name":"CAMEL_SPIDER", "path" : "resources/animated_sprites/camel_spider/camel_spider.json" },
+        {"name":"FUNNEL_WEB_SPIDER", "path" : "resources/animated_sprites/funnel_web_spider/funnel_web_spider.json" }
+        
     ]
 }
