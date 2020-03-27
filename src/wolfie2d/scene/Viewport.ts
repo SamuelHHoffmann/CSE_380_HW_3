@@ -36,4 +36,7 @@ export class Viewport {
         this.x = initX;
         this.y = initY;
     }
+
+    
+
 }

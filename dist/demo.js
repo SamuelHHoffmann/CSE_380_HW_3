@@ -2039,8 +2039,8 @@ var WebGLGameSpriteRenderer = function (_WebGLGameRenderingCo) {
             // CALCULATE HOW MUCH TO TRANSLATE THE QUAD PER THE SPRITE POSITION
             var spriteWidth = spriteType.getSpriteWidth();
             var spriteHeight = spriteType.getSpriteHeight();
-            var spriteXInPixels = sprite.getPosition().getX() + spriteWidth / 2;
-            var spriteYInPixels = sprite.getPosition().getY() + spriteHeight / 2;
+            var spriteXInPixels = sprite.getPosition().getX() + spriteWidth / 2 - viewport.getX();
+            var spriteYInPixels = sprite.getPosition().getY() + spriteHeight / 2 + viewport.getY();
             var spriteXTranslate = (spriteXInPixels - canvasWidth / 2) / (canvasWidth / 2);
             var spriteYTranslate = (spriteYInPixels - canvasHeight / 2) / (canvasHeight / 2);
             this.meshTranslate.setX(spriteXTranslate);
@@ -2365,6 +2365,10 @@ var SceneGraph = function () {
                 for (var _iterator3 = this.animatedSprites[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
                     var sprite = _step3.value;
 
+                    // if (sprite.getLeft() >= this.viewport.getX() && sprite.getLeft() <= this.viewport.getX() + this.viewport.getWidth()) {
+                    //     if (sprite.getTop() >= this.viewport.getY() && sprite.getTop() <= this.viewport.getY() + this.viewport.getHeight()) {
+                    //     }
+                    // }
                     this.visibleSet.push(sprite);
                 }
             } catch (err) {
@@ -2923,14 +2927,57 @@ var UIController = function UIController(canvasId, initScene) {
     this.mouseUpHandler = function (event) {
         _this.spriteToDrag = null;
     };
+    this.keybaordPressDown = function (event) {
+        if (event.code == "KeyA" || event.code == "KeyS" || event.code == "KeyW" || event.code == "KeyD") {
+            var code = event.code;
+            if (_this.keys.indexOf(code) == -1) {
+                _this.keys.push(code);
+            }
+            // this.keybaordPressHeld(event);
+        }
+    };
+    this.keybaordPressHeld = function (event) {
+        if (event.code == "KeyA" || event.code == "KeyS" || event.code == "KeyW" || event.code == "KeyD") {
+            var viewport = _this.scene.getViewport();
+            var xOffset = 0;
+            var yOffset = 0;
+            _this.keys.forEach(function (letter) {
+                if (letter == 'KeyW') {
+                    console.log('KeyPress: W');
+                    yOffset += 10;
+                } else if (letter == 'KeyA') {
+                    console.log('KeyPress: A');
+                    xOffset -= 10;
+                } else if (letter == 'KeyS') {
+                    console.log('KeyPress: S');
+                    yOffset -= 10;
+                } else if (letter == 'KeyD') {
+                    console.log('KeyPress: D');
+                    xOffset += 10;
+                }
+            });
+            viewport.setPosition(viewport.getX() + xOffset, viewport.getY() + yOffset);
+        }
+    };
+    this.keybaordPressUp = function (event) {
+        var code = event.code;
+        _this.keys.splice(_this.keys.indexOf(code), 1);
+        // this.keybaordPressHeld(event);
+    };
     this.spriteToDrag = null;
     this.scene = initScene;
     this.dragOffsetX = -1;
     this.dragOffsetY = -1;
+    this.keys = [];
     var canvas = document.getElementById(canvasId);
+    canvas.tabIndex = 1;
     canvas.addEventListener("mousedown", this.mouseDownHandler);
     canvas.addEventListener("mousemove", this.mouseMoveHandler);
     canvas.addEventListener("mouseup", this.mouseUpHandler);
+    // canvas.addEventListener("keydown", this.keybaordPress);
+    canvas.addEventListener("keypress", this.keybaordPressHeld);
+    canvas.addEventListener("keydown", this.keybaordPressDown);
+    canvas.addEventListener("keyup", this.keybaordPressUp);
 };
 
 exports.UIController = UIController;
