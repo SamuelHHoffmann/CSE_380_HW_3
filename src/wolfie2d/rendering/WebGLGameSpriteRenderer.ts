@@ -60,38 +60,40 @@ export class WebGLGameSpriteRenderer extends WebGLGameRenderingComponent {
         this.meshTranslate.setX(spriteXTranslate);
         this.meshTranslate.setY(-spriteYTranslate);
 
+
+
+        var tempRotation: number = 180;
+        var rotationDegrees: number = tempRotation * Math.PI / 180;
+        var rotationSin: number = Math.sin(rotationDegrees);
+        var rotationCos: number = Math.cos(rotationDegrees);
+
+
         // CALCULATE HOW MUCH TO SCALE THE QUAD PER THE SPRITE SIZE
         let defaultWidth: number = canvasWidth;
         let defaultHeight: number = canvasHeight;
         let scaleX: number = 2 * spriteWidth / defaultWidth;
         let scaleY: number = 2 * spriteHeight / defaultHeight;
-        this.meshScale.set(scaleX, scaleY, 0.0, 0.0);//1.0, 1.0); //stretching issue here.
 
 
-        this.meshRotate.set(0.0, 0.0, 3.1415, 0.0); // rotate on z axis
 
-        // let rotation = [0, 1];
+        this.meshScale.set(scaleX, scaleY, 0.0, 0.0);
+        // this.meshScale.set((scaleX * rotationCos + scaleY * rotationSin), (scaleX * rotationSin + scaleY * rotationCos), 0.0, 0.0);
+
+        //limits movement to 90 degrees
+        // if (sprite.getDirection() == 0 || sprite.getDirection() == 2) { //up or down
+        //     this.meshScale.set(scaleX, scaleY, 0.0, 0.0);//1.0, 1.0); 
+        // } else { //left or right (1, 3)
+        //     this.meshScale.set(scaleY, scaleX, 0.0, 0.0);//1.0, 1.0); 
+        // }
+
+
+
+        this.meshRotate.set(0.0, 0.0, tempRotation * 0.0174533, 0.0); // rotate on z axis
+
 
         // @todo - COMBINE THIS WITH THE ROTATE AND SCALE VALUES FROM THE SPRITE
         MathUtilities.identity(this.meshTransform);
         MathUtilities.model(this.meshTransform, this.meshTranslate, this.meshRotate, this.meshScale);
-
-        // console.log(this.meshTransform);
-
-        // MathUtilities.transpose(this.meshTransform, this.meshTransform);
-
-        // //rotation
-
-
-        // // rotation around center
-        // MathUtilities.identity(this.meshTransform);
-        // let tempVector: Vector3 = new Vector3();
-        // tempVector.set(texture.width * 0.5, texture.height * 0.5, 0, 0);
-        // MathUtilities.translate(this.meshTransform, tempVector);
-        // MathUtilities.rotate(this.meshTransform, this.meshRotate);
-        // tempVector.set(texture.width * -0.5, texture.height * -0.5, 0, 0);
-        // MathUtilities.translate(this.meshTransform, tempVector);
-
 
         // FIGURE OUT THE TEXTURE COORDINATE FACTOR AND SHIFT
         let texCoordFactorX: number = spriteWidth / texture.width;
@@ -100,10 +102,6 @@ export class WebGLGameSpriteRenderer extends WebGLGameRenderingComponent {
         let spriteTop: number = sprite.getTop();
         let texCoordShiftX: number = spriteLeft / texture.width;
         let texCoordShiftY: number = spriteTop / texture.height;
-
-
-
-
 
         // USE THE ATTRIBUTES
         webGL.bindBuffer(webGL.ARRAY_BUFFER, this.vertexDataBuffer);

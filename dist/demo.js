@@ -29,6 +29,7 @@ game.getResourceManager().loadScene(DESERT_SCENE_PATH, game.getSceneGraph(), gam
         var randomX = Math.random() * worldWidth;
         var randomY = Math.random() * worldHeight;
         randomSprite.getPosition().set(randomX, randomY, 0, 1);
+        randomSprite.setDirection(Math.floor(Math.random() * 4));
         game.getSceneGraph().addAnimatedSprite(randomSprite);
     }
     for (var _i = 0; _i < 50; _i++) {
@@ -37,6 +38,7 @@ game.getResourceManager().loadScene(DESERT_SCENE_PATH, game.getSceneGraph(), gam
         var _randomX = Math.random() * worldWidth;
         var _randomY = Math.random() * worldHeight;
         _randomSprite.getPosition().set(_randomX, _randomY, 0, 1);
+        _randomSprite.setDirection(Math.floor(Math.random() * 4));
         game.getSceneGraph().addAnimatedSprite(_randomSprite);
     }
     // NOW ADD TEXT RENDERING. WE ARE GOING TO RENDER 3 THINGS:
@@ -2053,28 +2055,27 @@ var WebGLGameSpriteRenderer = function (_WebGLGameRenderingCo) {
             var spriteYTranslate = (spriteYInPixels - canvasHeight / 2) / (canvasHeight / 2);
             this.meshTranslate.setX(spriteXTranslate);
             this.meshTranslate.setY(-spriteYTranslate);
+            var tempRotation = 180;
+            var rotationDegrees = tempRotation * Math.PI / 180;
+            var rotationSin = Math.sin(rotationDegrees);
+            var rotationCos = Math.cos(rotationDegrees);
             // CALCULATE HOW MUCH TO SCALE THE QUAD PER THE SPRITE SIZE
             var defaultWidth = canvasWidth;
             var defaultHeight = canvasHeight;
             var scaleX = 2 * spriteWidth / defaultWidth;
             var scaleY = 2 * spriteHeight / defaultHeight;
-            this.meshScale.set(scaleX, scaleY, 0.0, 0.0); //1.0, 1.0); //ugh 
-            this.meshRotate.set(0.0, 0.0, 3.1415, 0.0);
-            // let rotation = [0, 1];
+            this.meshScale.set(scaleX, scaleY, 0.0, 0.0);
+            // this.meshScale.set((scaleX * rotationCos + scaleY * rotationSin), (scaleX * rotationSin + scaleY * rotationCos), 0.0, 0.0);
+            //limits movement to 90 degrees
+            // if (sprite.getDirection() == 0 || sprite.getDirection() == 2) { //up or down
+            //     this.meshScale.set(scaleX, scaleY, 0.0, 0.0);//1.0, 1.0); 
+            // } else { //left or right (1, 3)
+            //     this.meshScale.set(scaleY, scaleX, 0.0, 0.0);//1.0, 1.0); 
+            // }
+            this.meshRotate.set(0.0, 0.0, tempRotation * 0.0174533, 0.0); // rotate on z axis
             // @todo - COMBINE THIS WITH THE ROTATE AND SCALE VALUES FROM THE SPRITE
             MathUtilities_1.MathUtilities.identity(this.meshTransform);
             MathUtilities_1.MathUtilities.model(this.meshTransform, this.meshTranslate, this.meshRotate, this.meshScale);
-            // console.log(this.meshTransform);
-            // MathUtilities.transpose(this.meshTransform, this.meshTransform);
-            // //rotation
-            // // rotation around center
-            // MathUtilities.identity(this.meshTransform);
-            // let tempVector: Vector3 = new Vector3();
-            // tempVector.set(texture.width * 0.5, texture.height * 0.5, 0, 0);
-            // MathUtilities.translate(this.meshTransform, tempVector);
-            // MathUtilities.rotate(this.meshTransform, this.meshRotate);
-            // tempVector.set(texture.width * -0.5, texture.height * -0.5, 0, 0);
-            // MathUtilities.translate(this.meshTransform, tempVector);
             // FIGURE OUT THE TEXTURE COORDINATE FACTOR AND SHIFT
             var texCoordFactorX = spriteWidth / texture.width;
             var texCoordFactorY = spriteHeight / texture.height;
@@ -2557,10 +2558,21 @@ var AnimatedSprite = function (_SceneObject_1$SceneO) {
         _this.state = initState;
         _this.animationFrameIndex = 0;
         _this.frameCounter = 0;
+        _this.direction = 0;
         return _this;
     }
 
     _createClass(AnimatedSprite, [{
+        key: "getDirection",
+        value: function getDirection() {
+            return this.direction;
+        }
+    }, {
+        key: "setDirection",
+        value: function setDirection(newDirection) {
+            this.direction = newDirection;
+        }
+    }, {
         key: "getAnimationFrameIndex",
         value: function getAnimationFrameIndex() {
             return this.animationFrameIndex;

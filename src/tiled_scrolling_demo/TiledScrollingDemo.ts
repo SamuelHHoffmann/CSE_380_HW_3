@@ -34,6 +34,7 @@ game.getResourceManager().loadScene(DESERT_SCENE_PATH,
             let randomX: number = Math.random() * worldWidth;
             let randomY: number = Math.random() * worldHeight;
             randomSprite.getPosition().set(randomX, randomY, 0, 1);
+            randomSprite.setDirection(Math.floor(Math.random() * 4));
             game.getSceneGraph().addAnimatedSprite(randomSprite);
         }
         for (let i = 0; i < 50; i++) {
@@ -42,6 +43,7 @@ game.getResourceManager().loadScene(DESERT_SCENE_PATH,
             let randomX: number = Math.random() * worldWidth;
             let randomY: number = Math.random() * worldHeight;
             randomSprite.getPosition().set(randomX, randomY, 0, 1);
+            randomSprite.setDirection(Math.floor(Math.random() * 4));
             game.getSceneGraph().addAnimatedSprite(randomSprite);
         }
 
