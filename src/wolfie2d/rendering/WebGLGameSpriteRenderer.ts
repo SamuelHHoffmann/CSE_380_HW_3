@@ -62,8 +62,8 @@ export class WebGLGameSpriteRenderer extends WebGLGameRenderingComponent {
 
 
 
-        var tempRotation: number = 180;
-        var rotationDegrees: number = tempRotation * Math.PI / 180;
+        var tempRotation: number = sprite.getDirection();
+        var rotationDegrees: number = tempRotation * (Math.PI / 180);
         var rotationSin: number = Math.sin(rotationDegrees);
         var rotationCos: number = Math.cos(rotationDegrees);
 
@@ -73,20 +73,56 @@ export class WebGLGameSpriteRenderer extends WebGLGameRenderingComponent {
         let defaultHeight: number = canvasHeight;
         let scaleX: number = 2 * spriteWidth / defaultWidth;
         let scaleY: number = 2 * spriteHeight / defaultHeight;
+        let flipAngleWidth = Math.atan(defaultWidth / defaultHeight) * (180 / Math.PI);
+        let filpAngleHeight = Math.atan(defaultHeight / defaultWidth) * (180 / Math.PI);
+        // console.log(flipAngle);
+        // console.log(filpAngle2);
+        // console.log(defaultHeight);
+        // console.log(defaultWidth);
+        // let scaleX: number;
+        // let scaleY: number;
 
 
 
-        this.meshScale.set(scaleX, scaleY, 0.0, 0.0);
-        // this.meshScale.set((scaleX * rotationCos + scaleY * rotationSin), (scaleX * rotationSin + scaleY * rotationCos), 0.0, 0.0);
+        // let otherRotation: number = tempRotation;
+        // // if (tempRotation > 180) {
+        // //     otherRotation -= 180;
+        // // }
 
-        //limits movement to 90 degrees
-        // if (sprite.getDirection() == 0 || sprite.getDirection() == 2) { //up or down
-        //     this.meshScale.set(scaleX, scaleY, 0.0, 0.0);//1.0, 1.0); 
-        // } else { //left or right (1, 3)
-        //     this.meshScale.set(scaleY, scaleX, 0.0, 0.0);//1.0, 1.0); 
+        // <testing>
+        // rotationDegrees %= 90;
+
+        // if (rotationDegrees <= flipAngleWidth) {
+        //     scaleX = 2 * spriteWidth / (2 * ((defaultWidth / 2) / Math.cos(rotationDegrees)));
+        // } else {
+        //     scaleX = 2 * spriteWidth / (2 * ((defaultHeight / 2) / Math.cos(90 - rotationDegrees)));
+        // }
+
+        // if (rotationDegrees <= filpAngleHeight) {
+        //     scaleY = 2 * spriteHeight / (2 * ((defaultHeight / 2) / Math.cos(rotationDegrees)));
+        // } else {
+        //     scaleY = 2 * spriteWidth / (2 * ((defaultWidth / 2) / Math.cos(90 - rotationDegrees)))
+        // }
+
+        // this.meshScale.set(scaleX, scaleY, 0.0, 0.0);
+        // </Testing>
+
+        // if (otherRotation >= 0 && otherRotation <= flipAngle) {
+        //     scaleX = 2 * spriteWidth / (2 * ((defaultWidth / 2) / Math.cos(rotationDegrees)));
+        //     scaleY = 2 * spriteHeight / (2 * ((defaultHeight / 2) / Math.cos(rotationDegrees)));
+        // } else if (otherRotation > flipAngle && otherRotation < 90) {
+        //     scaleY = 2 * spriteWidth / (2 * ((defaultHeight / 2) / Math.cos((Math.PI / 2) - rotationDegrees)));
+        //     scaleX = 2 * spriteHeight / (2 * ((defaultHeight / 2) / Math.cos(rotationDegrees)));
+        // } else if (otherRotation >= 90 && otherRotation <= filpAngle2 + 90) {
+        //     scaleY = 2 * spriteWidth / (2 * ((defaultHeight / 2) / Math.cos((Math.PI) - rotationDegrees)));
+        //     scaleX = 2 * spriteHeight / (2 * ((defaultHeight / 2) / Math.cos((Math.PI / 2) - (Math.PI) - rotationDegrees)));
+        // } else {
+        //     scaleX = 2 * spriteWidth / (2 * ((defaultWidth / 2) / Math.cos((Math.PI) - rotationDegrees)));
+        //     scaleY = 2 * spriteHeight / (2 * ((defaultHeight / 2) / Math.cos((Math.PI) - rotationDegrees)));
         // }
 
 
+        this.meshScale.set(Math.abs(rotationCos * scaleX) + Math.abs(rotationSin * scaleY), Math.abs(rotationCos * scaleY) + Math.abs(rotationSin * scaleX), 0.0, 0.0);
 
         this.meshRotate.set(0.0, 0.0, tempRotation * 0.0174533, 0.0); // rotate on z axis
 

@@ -1,16 +1,20 @@
 import { SceneObject } from '../SceneObject'
 import { AnimatedSpriteType } from './AnimatedSpriteType'
+import { AIBehavior, State } from '../../AI/AIBehavior';
 
 export class AnimatedSprite extends SceneObject {
     private spriteType: AnimatedSpriteType;
     private state: string;
     private animationFrameIndex: number;
     private frameCounter: number;
-    private direction: number; // 0 = up, 1 = left, 2 = down, 3 = right
+    private direction: number;
+    private ai: AIBehavior;
 
-    public constructor(initSpriteType: AnimatedSpriteType, initState: string) {
+
+    public constructor(initSpriteType: AnimatedSpriteType, initState: string, ai: AIBehavior) {
         super();
         this.spriteType = initSpriteType;
+        this.ai = ai;
 
         // START RESET
         this.state = initState;
@@ -20,11 +24,17 @@ export class AnimatedSprite extends SceneObject {
     }
 
     public getDirection(): number {
+        // this.direction += 1;
+        // if (this.direction == 360) {
+        //     this.direction = 0;
+        // }
         return this.direction;
+
     }
 
     public setDirection(newDirection: number) {
-        this.direction = newDirection;
+        this.direction = (newDirection % 360);
+
     }
 
 
@@ -64,6 +74,12 @@ export class AnimatedSprite extends SceneObject {
             }
             this.frameCounter = 0;
         }
+
+
+
+        console.log(this.ai.update());
+        this.ai.resolveState(this);
+
     }
 
     public contains(pointX: number, pointY: number): boolean {
