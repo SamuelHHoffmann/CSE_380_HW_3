@@ -11,6 +11,7 @@ var AnimatedSprite_1 = require("../wolfie2d/scene/sprite/AnimatedSprite");
 var TextRenderer_1 = require("../wolfie2d/rendering/TextRenderer");
 var RandomWalkAI_1 = require("../wolfie2d/AI/RandomWalkAI");
 var PaceRunAI_1 = require("../wolfie2d/AI/PaceRunAI");
+var PlayerAI_1 = require("../wolfie2d/AI/PlayerAI");
 // THIS IS THE ENTRY POINT INTO OUR APPLICATION, WE MAKE
 // THE Game OBJECT AND INITIALIZE IT WITH THE CANVASES
 var game = new Game_1.Game("game_canvas", "text_canvas");
@@ -30,32 +31,34 @@ game.getResourceManager().loadScene(DESERT_SCENE_PATH, game.getSceneGraph(), gam
     for (var i = 0; i < 50; i++) {
         var _type = game.getResourceManager().getAnimatedSpriteType("COCKROACH");
         var _ai = new RandomWalkAI_1.RandomWalkAI(game.getSceneGraph());
-        var _randomSprite = new AnimatedSprite_1.AnimatedSprite(_type, "IDLE", _ai);
+        var randomSprite = new AnimatedSprite_1.AnimatedSprite(_type, "IDLE");
+        randomSprite.setAI(_ai);
+        var randomX = Math.random() * worldWidth;
+        var randomY = Math.random() * worldHeight;
+        randomSprite.getPosition().set(randomX, randomY, 0, 1);
+        randomSprite.setDirection(90 * Math.floor(Math.random() * 4));
+        game.getSceneGraph().addAnimatedSprite(randomSprite);
+    }
+    for (var _i = 0; _i < 50; _i++) {
+        var _type2 = game.getResourceManager().getAnimatedSpriteType("CAMEL_SPIDER");
+        var _ai2 = new PaceRunAI_1.PaceRunAI(game.getSceneGraph()); // make other AI and change class
+        var _randomSprite = new AnimatedSprite_1.AnimatedSprite(_type2, "IDLE");
+        _randomSprite.setAI(_ai2);
         var _randomX = Math.random() * worldWidth;
         var _randomY = Math.random() * worldHeight;
         _randomSprite.getPosition().set(_randomX, _randomY, 0, 1);
         _randomSprite.setDirection(90 * Math.floor(Math.random() * 4));
         game.getSceneGraph().addAnimatedSprite(_randomSprite);
     }
-    for (var _i = 0; _i < 50; _i++) {
-        var _type2 = game.getResourceManager().getAnimatedSpriteType("CAMEL_SPIDER");
-        var _ai2 = new PaceRunAI_1.PaceRunAI(game.getSceneGraph()); // make other AI and change class
-        var _randomSprite2 = new AnimatedSprite_1.AnimatedSprite(_type2, "IDLE", _ai2);
-        var _randomX2 = Math.random() * worldWidth;
-        var _randomY2 = Math.random() * worldHeight;
-        _randomSprite2.getPosition().set(_randomX2, _randomY2, 0, 1);
-        _randomSprite2.setDirection(90 * Math.floor(Math.random() * 4));
-        game.getSceneGraph().addAnimatedSprite(_randomSprite2);
-    }
     var type = game.getResourceManager().getAnimatedSpriteType("FUNNEL_WEB_SPIDER");
-    var ai = new RandomWalkAI_1.RandomWalkAI(game.getSceneGraph());
-    var randomSprite = new AnimatedSprite_1.AnimatedSprite(type, "IDLE", ai);
-    var randomX = Math.random() * worldWidth;
-    var randomY = Math.random() * worldHeight;
-    randomSprite.getPosition().set(worldWidth / 5, worldHeight / 8, 0, 1);
-    randomSprite.setDirection(90 * Math.floor(Math.random() * 4));
-    game.getSceneGraph().addAnimatedSprite(randomSprite);
-    console.log(randomSprite.getSpriteType().getSpriteSheetTexture().webGLTextureId);
+    var ai = new PlayerAI_1.PlayerAI(game.getSceneGraph());
+    var player = new AnimatedSprite_1.AnimatedSprite(type, "IDLE");
+    player.setAI(ai);
+    player.getPosition().set(worldWidth / 5, worldHeight / 8, 0, 1);
+    player.setDirection(90 * Math.floor(Math.random() * 4));
+    game.getSceneGraph().addAnimatedSprite(player);
+    game.getSceneGraph().setPlayer(player);
+    // console.log(randomSprite.getSpriteType().getSpriteSheetTexture().webGLTextureId);
     // NOW ADD TEXT RENDERING. WE ARE GOING TO RENDER 3 THINGS:
     // NUMBER OF SPRITES IN THE SCENE
     // LOCATION IN GAME WORLD OF VIEWPORT
@@ -84,7 +87,7 @@ game.getResourceManager().loadScene(DESERT_SCENE_PATH, game.getSceneGraph(), gam
     game.start();
 });
 
-},{"../wolfie2d/AI/PaceRunAI":3,"../wolfie2d/AI/RandomWalkAI":4,"../wolfie2d/Game":5,"../wolfie2d/rendering/TextRenderer":11,"../wolfie2d/scene/sprite/AnimatedSprite":21}],2:[function(require,module,exports){
+},{"../wolfie2d/AI/PaceRunAI":3,"../wolfie2d/AI/PlayerAI":4,"../wolfie2d/AI/RandomWalkAI":5,"../wolfie2d/Game":6,"../wolfie2d/rendering/TextRenderer":12,"../wolfie2d/scene/sprite/AnimatedSprite":22}],2:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -183,7 +186,7 @@ var PaceRunAI = function (_AIBehavior_1$AIBehav) {
             var state = this.pattern[this.stateIndex];
             var player = void 0;
             var playerInRange = false;
-            var nearSprites = this.scene.spritesInRange(sprite.getPosition().getX() - 178, sprite.getPosition().getY() - 178, 178);
+            var nearSprites = this.scene.spritesInRange(sprite.getPosition().getX() - 50, sprite.getPosition().getY() + 50, 100 + sprite.getSpriteType().getSpriteWidth());
             var _iteratorNormalCompletion = true;
             var _didIteratorError = false;
             var _iteratorError = undefined;
@@ -192,8 +195,8 @@ var PaceRunAI = function (_AIBehavior_1$AIBehav) {
                 for (var _iterator = nearSprites[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                     var tempSprite = _step.value;
 
-                    console.log(tempSprite.getSpriteType().getSpriteSheetTexture().webGLTextureId);
-                    if (tempSprite.getSpriteType().getSpriteSheetTexture().webGLTextureId == 3) {
+                    // console.log(tempSprite.getSpriteType().getSpriteSheetTexture().webGLTextureId);
+                    if (tempSprite == this.scene.getPlayer()) {
                         player = tempSprite;
                         playerInRange = true;
                     }
@@ -230,6 +233,8 @@ var PaceRunAI = function (_AIBehavior_1$AIBehav) {
                 this.setBehavior([AIBehavior_1.State.RUN]);
                 state = this.pattern[this.stateIndex];
             }
+            var worldWidth = this.scene.getTiledLayers()[0].getColumns() * this.scene.getTiledLayers()[0].getTileSet().getTileWidth();
+            var worldHeight = this.scene.getTiledLayers()[0].getRows() * this.scene.getTiledLayers()[0].getTileSet().getTileHeight();
             if (state == AIBehavior_1.State.WALK) {
                 if (sprite.getState() != "WALKING") {
                     sprite.setState("WALKING");
@@ -237,13 +242,13 @@ var PaceRunAI = function (_AIBehavior_1$AIBehav) {
                 if (sprite.getPosition().getX() <= 0) {
                     sprite.getPosition().setX(sprite.getPosition().getX() + 10);
                 }
-                if (sprite.getPosition().getX() >= 3200) {
+                if (sprite.getPosition().getX() >= worldWidth) {
                     sprite.getPosition().setX(sprite.getPosition().getX() - 10);
                 }
                 if (sprite.getPosition().getY() <= 0) {
                     sprite.getPosition().setY(sprite.getPosition().getY() + 10);
                 }
-                if (sprite.getPosition().getY() >= 3200) {
+                if (sprite.getPosition().getY() >= worldHeight) {
                     sprite.getPosition().setY(sprite.getPosition().getY() - 10);
                 }
                 switch (sprite.getDirection()) {
@@ -309,6 +314,94 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var AIBehavior_1 = require("./AIBehavior");
+
+var PlayerAI = function (_AIBehavior_1$AIBehav) {
+    _inherits(PlayerAI, _AIBehavior_1$AIBehav);
+
+    function PlayerAI(scene) {
+        _classCallCheck(this, PlayerAI);
+
+        var _this = _possibleConstructorReturn(this, (PlayerAI.__proto__ || Object.getPrototypeOf(PlayerAI)).call(this, scene));
+
+        _this.setBehavior([AIBehavior_1.State.WALK]);
+        return _this;
+    }
+
+    _createClass(PlayerAI, [{
+        key: "generatePattern",
+        value: function generatePattern() {
+            var pattern = [AIBehavior_1.State.NONE];
+            return pattern;
+        }
+    }, {
+        key: "resolveState",
+        value: function resolveState(sprite) {
+            var state = this.pattern[this.stateIndex];
+            var targetX = this.scene.getMouse()[0] - sprite.getSpriteType().getSpriteWidth() / 2;
+            var targetY = this.scene.getMouse()[1] - sprite.getSpriteType().getSpriteHeight() / 2;
+            var deltaX = targetX - sprite.getPosition().getX();
+            var deltaY = targetY - sprite.getPosition().getY();
+            var worldWidth = this.scene.getTiledLayers()[0].getColumns() * this.scene.getTiledLayers()[0].getTileSet().getTileWidth();
+            var worldHeight = this.scene.getTiledLayers()[0].getRows() * this.scene.getTiledLayers()[0].getTileSet().getTileHeight();
+            if (deltaX == 0 && deltaY == 0) {
+                state = AIBehavior_1.State.NONE;
+            }
+            if (state == AIBehavior_1.State.WALK) {
+                if (sprite.getState() != "WALKING") {
+                    sprite.setState("WALKING");
+                }
+                if (sprite.getPosition().getX() <= 0) {
+                    sprite.getPosition().setX(sprite.getPosition().getX() + 10);
+                }
+                if (sprite.getPosition().getX() >= worldWidth) {
+                    sprite.getPosition().setX(sprite.getPosition().getX() - 10);
+                }
+                if (sprite.getPosition().getY() <= 0) {
+                    sprite.getPosition().setY(sprite.getPosition().getY() + 10);
+                }
+                if (sprite.getPosition().getY() >= worldHeight) {
+                    sprite.getPosition().setY(sprite.getPosition().getY() - 10);
+                }
+                if (deltaX > 0) {
+                    sprite.setDirection(270);
+                    sprite.getPosition().setX(sprite.getPosition().getX() + 1);
+                } else if (deltaX < 0) {
+                    sprite.setDirection(90);
+                    sprite.getPosition().setX(sprite.getPosition().getX() - 1);
+                } else if (deltaY > 0) {
+                    sprite.setDirection(180);
+                    sprite.getPosition().setY(sprite.getPosition().getY() + 1);
+                } else if (deltaY < 0) {
+                    sprite.setDirection(0);
+                    sprite.getPosition().setY(sprite.getPosition().getY() - 1);
+                }
+            } else if (state == AIBehavior_1.State.NONE) {
+                this.setBehavior([AIBehavior_1.State.NONE]);
+                if (sprite.getState() != "IDLE") {
+                    sprite.setState("IDLE");
+                }
+            }
+        }
+    }]);
+
+    return PlayerAI;
+}(AIBehavior_1.AIBehavior);
+
+exports.PlayerAI = PlayerAI;
+
+},{"./AIBehavior":2}],5:[function(require,module,exports){
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var AIBehavior_1 = require("./AIBehavior");
 var AIBehavior_2 = require("./AIBehavior");
 
 var RandomWalkAI = function (_AIBehavior_1$AIBehav) {
@@ -337,6 +430,8 @@ var RandomWalkAI = function (_AIBehavior_1$AIBehav) {
         key: "resolveState",
         value: function resolveState(sprite) {
             var state = this.pattern[this.stateIndex];
+            var worldWidth = this.scene.getTiledLayers()[0].getColumns() * this.scene.getTiledLayers()[0].getTileSet().getTileWidth();
+            var worldHeight = this.scene.getTiledLayers()[0].getRows() * this.scene.getTiledLayers()[0].getTileSet().getTileHeight();
             if (state == AIBehavior_2.State.WALK) {
                 if (sprite.getState() != "WALKING") {
                     sprite.setState("WALKING");
@@ -344,13 +439,13 @@ var RandomWalkAI = function (_AIBehavior_1$AIBehav) {
                 if (sprite.getPosition().getX() <= 0) {
                     sprite.getPosition().setX(sprite.getPosition().getX() + 10);
                 }
-                if (sprite.getPosition().getX() >= 3200) {
+                if (sprite.getPosition().getX() >= worldWidth) {
                     sprite.getPosition().setX(sprite.getPosition().getX() - 10);
                 }
                 if (sprite.getPosition().getY() <= 0) {
                     sprite.getPosition().setY(sprite.getPosition().getY() + 10);
                 }
-                if (sprite.getPosition().getY() >= 3200) {
+                if (sprite.getPosition().getY() >= worldHeight) {
                     sprite.getPosition().setY(sprite.getPosition().getY() - 10);
                 }
                 switch (sprite.getDirection()) {
@@ -386,7 +481,7 @@ var RandomWalkAI = function (_AIBehavior_1$AIBehav) {
 
 exports.RandomWalkAI = RandomWalkAI;
 
-},{"./AIBehavior":2}],5:[function(require,module,exports){
+},{"./AIBehavior":2}],6:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -495,7 +590,7 @@ var Game = function (_GameLoopTemplate_1$G) {
 
 exports.Game = Game;
 
-},{"./files/ResourceManager":6,"./loop/GameLoopTemplate":7,"./rendering/WebGLGameRenderingSystem":13,"./scene/SceneGraph":18,"./scene/Viewport":20,"./ui/UIController":25}],6:[function(require,module,exports){
+},{"./files/ResourceManager":7,"./loop/GameLoopTemplate":8,"./rendering/WebGLGameRenderingSystem":14,"./scene/SceneGraph":19,"./scene/Viewport":21,"./ui/UIController":26}],7:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -862,7 +957,7 @@ var ResourceManager = function () {
 
 exports.ResourceManager = ResourceManager;
 
-},{"../rendering/WebGLGameTexture":16,"../scene/sprite/AnimatedSpriteType":22,"../scene/tiles/TileSet":23,"../scene/tiles/TiledLayer":24}],7:[function(require,module,exports){
+},{"../rendering/WebGLGameTexture":17,"../scene/sprite/AnimatedSpriteType":23,"../scene/tiles/TileSet":24,"../scene/tiles/TiledLayer":25}],8:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1345,7 +1440,7 @@ var GameLoopTemplate = function () {
 
 exports.GameLoopTemplate = GameLoopTemplate;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -1645,7 +1740,7 @@ var MathUtilities;
     MathUtilities.subtractVectors = subtractVectors;
 })(MathUtilities = exports.MathUtilities || (exports.MathUtilities = {}));
 
-},{"./Matrix":9}],9:[function(require,module,exports){
+},{"./Matrix":10}],10:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1743,7 +1838,7 @@ var Matrix = function () {
 
 exports.Matrix = Matrix;
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1881,7 +1976,7 @@ var Vector3 = function () {
 
 exports.Vector3 = Vector3;
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1967,7 +2062,7 @@ var TextRenderer = function () {
 
 exports.TextRenderer = TextRenderer;
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2061,7 +2156,7 @@ var WebGLGameRenderingComponent = function () {
 
 exports.WebGLGameRenderingComponent = WebGLGameRenderingComponent;
 
-},{"../math/Matrix":9,"../math/Vector3":10,"./WebGLGameShader":14}],13:[function(require,module,exports){
+},{"../math/Matrix":10,"../math/Vector3":11,"./WebGLGameShader":15}],14:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2209,7 +2304,7 @@ var WebGLGameRenderingSystem = function () {
 
 exports.WebGLGameRenderingSystem = WebGLGameRenderingSystem;
 
-},{"./TextRenderer":11,"./WebGLGameSpriteRenderer":15,"./WebGLGameTiledLayerRenderer":17}],14:[function(require,module,exports){
+},{"./TextRenderer":12,"./WebGLGameSpriteRenderer":16,"./WebGLGameTiledLayerRenderer":18}],15:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2285,7 +2380,7 @@ var WebGLGameShader = function () {
 
 exports.WebGLGameShader = WebGLGameShader;
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2465,7 +2560,7 @@ var WebGLGameSpriteRenderer = function (_WebGLGameRenderingCo) {
 
 exports.WebGLGameSpriteRenderer = WebGLGameSpriteRenderer;
 
-},{"../math/MathUtilities":8,"./WebGLGameRenderingComponent":12}],16:[function(require,module,exports){
+},{"../math/MathUtilities":9,"./WebGLGameRenderingComponent":13}],17:[function(require,module,exports){
 "use strict";
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2478,7 +2573,7 @@ var WebGLGameTexture = function WebGLGameTexture() {
 
 exports.WebGLGameTexture = WebGLGameTexture;
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2578,7 +2673,7 @@ var WebGLGameTiledLayerRenderer = function (_WebGLGameRenderingCo) {
 
 exports.WebGLGameTiledLayerRenderer = WebGLGameTiledLayerRenderer;
 
-},{"./WebGLGameRenderingComponent":12}],18:[function(require,module,exports){
+},{"./WebGLGameRenderingComponent":13}],19:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2591,6 +2686,7 @@ var SceneGraph = function () {
     function SceneGraph() {
         _classCallCheck(this, SceneGraph);
 
+        this.mouse = [0, 0];
         // DEFAULT CONSTRUCTOR INITIALIZES OUR DATA STRUCTURES
         this.clear();
     }
@@ -2602,6 +2698,27 @@ var SceneGraph = function () {
             this.visibleSet = [];
             this.tiledLayers = [];
             this.tileSets = [];
+        }
+    }, {
+        key: "setMouse",
+        value: function setMouse(x, y) {
+            this.mouse[0] = x;
+            this.mouse[1] = y;
+        }
+    }, {
+        key: "getMouse",
+        value: function getMouse() {
+            return this.mouse;
+        }
+    }, {
+        key: "setPlayer",
+        value: function setPlayer(sprite) {
+            this.player = sprite;
+        }
+    }, {
+        key: "getPlayer",
+        value: function getPlayer() {
+            return this.player;
         }
     }, {
         key: "addTileSet",
@@ -2779,8 +2896,8 @@ var SceneGraph = function () {
                 for (var _iterator4 = this.animatedSprites[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
                     var sprite = _step4.value;
 
-                    if (sprite.getPosition().getX() >= xPos && sprite.getPosition().getX() <= xPos + range * 2) {
-                        if (sprite.getPosition().getY() >= yPos && sprite.getPosition().getY() <= yPos + range * 2) {
+                    if (sprite.getPosition().getX() + sprite.getSpriteType().getSpriteWidth() >= xPos && sprite.getPosition().getX() <= xPos + range) {
+                        if (sprite.getPosition().getY() - sprite.getSpriteType().getSpriteHeight() <= yPos && sprite.getPosition().getY() >= yPos - range) {
                             spritesInRange.push(sprite);
                         }
                     }
@@ -2809,7 +2926,7 @@ var SceneGraph = function () {
 
 exports.SceneGraph = SceneGraph;
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2862,7 +2979,7 @@ var SceneObject = function () {
 
 exports.SceneObject = SceneObject;
 
-},{"../math/Vector3":10}],20:[function(require,module,exports){
+},{"../math/Vector3":11}],21:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2920,7 +3037,7 @@ var Viewport = function () {
 
 exports.Viewport = Viewport;
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2937,13 +3054,13 @@ var SceneObject_1 = require("../SceneObject");
 var AnimatedSprite = function (_SceneObject_1$SceneO) {
     _inherits(AnimatedSprite, _SceneObject_1$SceneO);
 
-    function AnimatedSprite(initSpriteType, initState, ai) {
+    function AnimatedSprite(initSpriteType, initState) {
         _classCallCheck(this, AnimatedSprite);
 
         var _this = _possibleConstructorReturn(this, (AnimatedSprite.__proto__ || Object.getPrototypeOf(AnimatedSprite)).call(this));
 
+        _this.hasAI = false;
         _this.spriteType = initSpriteType;
-        _this.ai = ai;
         // START RESET
         _this.state = initState;
         _this.animationFrameIndex = 0;
@@ -2953,6 +3070,17 @@ var AnimatedSprite = function (_SceneObject_1$SceneO) {
     }
 
     _createClass(AnimatedSprite, [{
+        key: "setAI",
+        value: function setAI(ai) {
+            this.ai = ai;
+            this.hasAI = true;
+        }
+    }, {
+        key: "getAI",
+        value: function getAI() {
+            return this.ai;
+        }
+    }, {
         key: "getDirection",
         value: function getDirection() {
             // this.direction += 1;
@@ -3007,8 +3135,10 @@ var AnimatedSprite = function (_SceneObject_1$SceneO) {
                 }
                 this.frameCounter = 0;
             }
-            this.ai.update();
-            this.ai.resolveState(this);
+            if (this.hasAI == true) {
+                this.ai.update();
+                this.ai.resolveState(this);
+            }
         }
     }, {
         key: "contains",
@@ -3050,7 +3180,7 @@ var AnimatedSprite = function (_SceneObject_1$SceneO) {
 
 exports.AnimatedSprite = AnimatedSprite;
 
-},{"../SceneObject":19}],22:[function(require,module,exports){
+},{"../SceneObject":20}],23:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3134,7 +3264,7 @@ var AnimatedSpriteType = function () {
 
 exports.AnimatedSpriteType = AnimatedSpriteType;
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3216,7 +3346,7 @@ var TileSet = function () {
 
 exports.TileSet = TileSet;
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3325,40 +3455,72 @@ var TiledLayer = function () {
 
 exports.TiledLayer = TiledLayer;
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 Object.defineProperty(exports, "__esModule", { value: true });
+var AIBehavior_1 = require("../AI/AIBehavior");
 
 var UIController = function UIController(canvasId, initScene) {
     var _this = this;
 
     _classCallCheck(this, UIController);
 
-    this.mouseDownHandler = function (event) {
-        var mousePressX = event.clientX;
-        var mousePressY = event.clientY;
-        var sprite = _this.scene.getSpriteAt(mousePressX, mousePressY);
-        console.log("mousePressX: " + mousePressX);
-        console.log("mousePressY: " + mousePressY);
-        console.log("sprite: " + sprite);
-        if (sprite != null) {
-            // START DRAGGING IT
-            _this.spriteToDrag = sprite;
-            _this.dragOffsetX = sprite.getPosition().getX() - mousePressX;
-            _this.dragOffsetY = sprite.getPosition().getY() - mousePressY;
-        }
-    };
+    // public mouseDownHandler = (event: MouseEvent): void => {
+    //     let mousePressX: number = event.clientX;
+    //     let mousePressY: number = event.clientY;
+    //     let sprite: AnimatedSprite = this.scene.getSpriteAt(mousePressX, mousePressY);
+    //     console.log("mousePressX: " + mousePressX);
+    //     console.log("mousePressY: " + mousePressY);
+    //     console.log("sprite: " + sprite);
+    //     if (sprite != null) {
+    //         // START DRAGGING IT
+    //         this.spriteToDrag = sprite;
+    //         this.dragOffsetX = sprite.getPosition().getX() - mousePressX;
+    //         this.dragOffsetY = sprite.getPosition().getY() - mousePressY;
+    //     }
+    // }
     this.mouseMoveHandler = function (event) {
-        if (_this.spriteToDrag != null) {
-            _this.spriteToDrag.getPosition().set(event.clientX + _this.dragOffsetX, event.clientY + _this.dragOffsetY, _this.spriteToDrag.getPosition().getZ(), _this.spriteToDrag.getPosition().getW());
-        }
+        var player = _this.scene.getPlayer();
+        // let targetX: number = event.clientX - (player.getSpriteType().getSpriteWidth() / 2);
+        // let targetY: number = event.clientY - (player.getSpriteType().getSpriteHeight() / 2);
+        // let deltaX: number = targetX - (player ? player.getPosition().getX() : 0);
+        // let deltaY: number = targetY - (player ? player.getPosition().getY() : 0);
+        // let behaviorPath: State[] = [];
+        // player.getAI().setBehavior([State.NONE]);
+        // player.getPosition().setX(player.getPosition().getX() + deltaX);
+        // player.getPosition().setY(player.getPosition().getY() + deltaY);
+        // console.log(deltaX);
+        // console.log(deltaY);
+        // player.setDirection(Math.atan(deltaY / deltaX) * (180 / Math.PI));
+        // if (deltaX < 0) {
+        //     deltaX = Math.abs(deltaX);
+        //     behaviorPath.push(State.TURN_EAST);
+        // } else {
+        //     // behaviorPath.push(State.TURN_WEST);
+        //     behaviorPath.push(State.TURN_WEST);
+        // }
+        // for (let i = 0; i < deltaX; i++) {
+        //     behaviorPath.push(State.WALK);
+        // }
+        // if (deltaY < 0) {
+        //     deltaY = Math.abs(deltaY);
+        //     behaviorPath.push(State.TURN_NORTH);
+        // } else {
+        //     behaviorPath.push(State.TURN_SOUTH);
+        // }
+        // for (let i = 0; i < deltaY; i++) {
+        //     behaviorPath.push(State.WALK);
+        // }
+        // behaviorPath.push(State.NONE);
+        player.getAI().setBehavior([AIBehavior_1.State.WALK]);
+        _this.scene.setMouse(event.clientX, event.clientY);
     };
-    this.mouseUpHandler = function (event) {
-        _this.spriteToDrag = null;
-    };
+    // public mouseUpHandler = (event: MouseEvent): void => {
+    //     this.spriteToDrag = null;
+    // }
     this.keybaordPressDown = function (event) {
         if (event.code == "KeyA" || event.code == "KeyS" || event.code == "KeyW" || event.code == "KeyD") {
             var code = event.code;
@@ -3401,9 +3563,9 @@ var UIController = function UIController(canvasId, initScene) {
     this.keys = [];
     var canvas = document.getElementById(canvasId);
     canvas.tabIndex = 1;
-    canvas.addEventListener("mousedown", this.mouseDownHandler);
+    // canvas.addEventListener("mousedown", this.mouseDownHandler);
     canvas.addEventListener("mousemove", this.mouseMoveHandler);
-    canvas.addEventListener("mouseup", this.mouseUpHandler);
+    // canvas.addEventListener("mouseup", this.mouseUpHandler);
     // canvas.addEventListener("keydown", this.keybaordPress);
     canvas.addEventListener("keypress", this.keybaordPressHeld);
     canvas.addEventListener("keydown", this.keybaordPressDown);
@@ -3412,6 +3574,6 @@ var UIController = function UIController(canvasId, initScene) {
 
 exports.UIController = UIController;
 
-},{}]},{},[1])
+},{"../AI/AIBehavior":2}]},{},[1])
 
 //# sourceMappingURL=demo.js.map

@@ -1,33 +1,38 @@
-import { AIBehavior } from "./AIBehavior";
+import { AIBehavior, State } from "./AIBehavior";
 import { SceneGraph } from "../scene/SceneGraph";
-import { State } from "./AIBehavior";
 import { AnimatedSprite } from "../scene/sprite/AnimatedSprite";
 
 
 
-export class RandomWalkAI extends AIBehavior {
+
+export class PlayerAI extends AIBehavior {
 
     constructor(scene: SceneGraph) {
         super(scene);
-        this.setBehavior(this.generatePattern());
+        this.setBehavior([State.WALK]);
     }
 
 
     public generatePattern(): State[] {
-        let pattern: State[] = [];
-        for (let x = 0; x < 25 + Math.floor(Math.random() * 175); x++) {
-            pattern.push(State.WALK);
-        }
-        pattern.push(State.TURN_RAND);
+        let pattern: State[] = [State.NONE];
         return pattern;
     }
 
     public resolveState(sprite: AnimatedSprite): void {
         let state = this.pattern[this.stateIndex];
 
+        let targetX: number = this.scene.getMouse()[0] - (sprite.getSpriteType().getSpriteWidth() / 2);
+        let targetY: number = this.scene.getMouse()[1] - (sprite.getSpriteType().getSpriteHeight() / 2);
+
+        let deltaX: number = targetX - sprite.getPosition().getX();
+        let deltaY: number = targetY - sprite.getPosition().getY();
+
         let worldWidth: number = this.scene.getTiledLayers()[0].getColumns() * this.scene.getTiledLayers()[0].getTileSet().getTileWidth();
         let worldHeight: number = this.scene.getTiledLayers()[0].getRows() * this.scene.getTiledLayers()[0].getTileSet().getTileHeight();
 
+        if (deltaX == 0 && deltaY == 0) {
+            state = State.NONE;
+        }
 
         if (state == State.WALK) {
             if (sprite.getState() != "WALKING") {
@@ -46,32 +51,27 @@ export class RandomWalkAI extends AIBehavior {
                 sprite.getPosition().setY(sprite.getPosition().getY() - 10)
             }
 
-            switch (sprite.getDirection()) {
-                case 0:
-                    sprite.getPosition().setY(sprite.getPosition().getY() - 1);
-                    break;
-                case 90:
-                    sprite.getPosition().setX(sprite.getPosition().getX() - 1);
-                    break;
-                case 180:
-                    sprite.getPosition().setY(sprite.getPosition().getY() + 1);
-                    break;
-                case 270:
-                    sprite.getPosition().setX(sprite.getPosition().getX() + 1);
-                    break;
-                default:
-                    // console.error("illegal sprite direction", sprite.getDirection());
-                    break;
+            if (deltaX > 0) {
+                sprite.setDirection(270);
+                sprite.getPosition().setX(sprite.getPosition().getX() + 1);
+            } else if (deltaX < 0) {
+                sprite.setDirection(90);
+                sprite.getPosition().setX(sprite.getPosition().getX() - 1);
+            } else if (deltaY > 0) {
+                sprite.setDirection(180);
+                sprite.getPosition().setY(sprite.getPosition().getY() + 1);
+            } else if (deltaY < 0) {
+                sprite.setDirection(0);
+                sprite.getPosition().setY(sprite.getPosition().getY() - 1);
             }
-        } else if (state == State.TURN_RAND) {
-            let tempRandNum = Math.floor(Math.random() * 2);
-            if (tempRandNum == 0) {
-                sprite.setDirection(sprite.getDirection() + 90);
-            } else {
-                sprite.setDirection(sprite.getDirection() + 270);
+
+
+
+        } else if (state == State.NONE) {
+            this.setBehavior([State.NONE]);
+            if (sprite.getState() != "IDLE") {
+                sprite.setState("IDLE");
             }
         }
     }
-
-
 }

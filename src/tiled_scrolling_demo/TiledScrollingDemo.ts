@@ -12,6 +12,7 @@ import { TextToRender, TextRenderer } from '../wolfie2d/rendering/TextRenderer'
 import { AIBehavior } from '../wolfie2d/AI/AIBehavior'
 import { RandomWalkAI } from '../wolfie2d/AI/RandomWalkAI'
 import { PaceRunAI } from '../wolfie2d/AI/PaceRunAI'
+import { PlayerAI } from '../wolfie2d/AI/PlayerAI'
 
 // THIS IS THE ENTRY POINT INTO OUR APPLICATION, WE MAKE
 // THE Game OBJECT AND INITIALIZE IT WITH THE CANVASES
@@ -39,7 +40,8 @@ game.getResourceManager().loadScene(DESERT_SCENE_PATH,
         for (let i = 0; i < 50; i++) {
             let type: AnimatedSpriteType = game.getResourceManager().getAnimatedSpriteType("COCKROACH");
             let ai: AIBehavior = new RandomWalkAI(game.getSceneGraph());
-            let randomSprite: AnimatedSprite = new AnimatedSprite(type, "IDLE", ai);
+            let randomSprite: AnimatedSprite = new AnimatedSprite(type, "IDLE");
+            randomSprite.setAI(ai);
             let randomX: number = Math.random() * worldWidth;
             let randomY: number = Math.random() * worldHeight;
             randomSprite.getPosition().set(randomX, randomY, 0, 1);
@@ -49,22 +51,26 @@ game.getResourceManager().loadScene(DESERT_SCENE_PATH,
         for (let i = 0; i < 50; i++) {
             let type: AnimatedSpriteType = game.getResourceManager().getAnimatedSpriteType("CAMEL_SPIDER");
             let ai: AIBehavior = new PaceRunAI(game.getSceneGraph()); // make other AI and change class
-            let randomSprite: AnimatedSprite = new AnimatedSprite(type, "IDLE", ai);
+            let randomSprite: AnimatedSprite = new AnimatedSprite(type, "IDLE");
+            randomSprite.setAI(ai);
             let randomX: number = Math.random() * worldWidth;
             let randomY: number = Math.random() * worldHeight;
             randomSprite.getPosition().set(randomX, randomY, 0, 1);
             randomSprite.setDirection(90 * Math.floor(Math.random() * 4));
             game.getSceneGraph().addAnimatedSprite(randomSprite);
         }
+
+
         let type: AnimatedSpriteType = game.getResourceManager().getAnimatedSpriteType("FUNNEL_WEB_SPIDER");
-        let ai: AIBehavior = new RandomWalkAI(game.getSceneGraph());
-        let randomSprite: AnimatedSprite = new AnimatedSprite(type, "IDLE", ai);
-        let randomX: number = Math.random() * worldWidth;
-        let randomY: number = Math.random() * worldHeight;
-        randomSprite.getPosition().set(worldWidth / 5, worldHeight / 8, 0, 1);
-        randomSprite.setDirection(90 * Math.floor(Math.random() * 4));
-        game.getSceneGraph().addAnimatedSprite(randomSprite);
-        console.log(randomSprite.getSpriteType().getSpriteSheetTexture().webGLTextureId);
+        let ai: AIBehavior = new PlayerAI(game.getSceneGraph());
+        let player: AnimatedSprite = new AnimatedSprite(type, "IDLE");
+        player.setAI(ai);
+        player.getPosition().set(worldWidth / 5, worldHeight / 8, 0, 1);
+        player.setDirection(90 * Math.floor(Math.random() * 4));
+        game.getSceneGraph().addAnimatedSprite(player);
+        game.getSceneGraph().setPlayer(player)
+        // console.log(randomSprite.getSpriteType().getSpriteSheetTexture().webGLTextureId);
+
 
 
         // NOW ADD TEXT RENDERING. WE ARE GOING TO RENDER 3 THINGS:

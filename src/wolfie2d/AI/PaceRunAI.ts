@@ -25,11 +25,10 @@ export class PaceRunAI extends AIBehavior {
 
         let player: AnimatedSprite;
         let playerInRange: boolean = false;
-        let nearSprites: AnimatedSprite[] = this.scene.spritesInRange(sprite.getPosition().getX() - 178, sprite.getPosition().getY() - 178, 178);
+        let nearSprites: AnimatedSprite[] = this.scene.spritesInRange(sprite.getPosition().getX() - 50, sprite.getPosition().getY() + 50, 100 + sprite.getSpriteType().getSpriteWidth());
         for (let tempSprite of nearSprites) {
-            console.log(tempSprite.getSpriteType().getSpriteSheetTexture().webGLTextureId);
-            if (tempSprite.getSpriteType().getSpriteSheetTexture().webGLTextureId == 3) {
-
+            // console.log(tempSprite.getSpriteType().getSpriteSheetTexture().webGLTextureId);
+            if (tempSprite == this.scene.getPlayer()) {
                 player = tempSprite;
                 playerInRange = true;
             }
@@ -54,6 +53,8 @@ export class PaceRunAI extends AIBehavior {
             state = this.pattern[this.stateIndex];
         }
 
+        let worldWidth: number = this.scene.getTiledLayers()[0].getColumns() * this.scene.getTiledLayers()[0].getTileSet().getTileWidth();
+        let worldHeight: number = this.scene.getTiledLayers()[0].getRows() * this.scene.getTiledLayers()[0].getTileSet().getTileHeight();
 
 
         if (state == State.WALK) {
@@ -63,13 +64,13 @@ export class PaceRunAI extends AIBehavior {
             if (sprite.getPosition().getX() <= 0) {
                 sprite.getPosition().setX(sprite.getPosition().getX() + 10)
             }
-            if (sprite.getPosition().getX() >= 3200) {
+            if (sprite.getPosition().getX() >= worldWidth) {
                 sprite.getPosition().setX(sprite.getPosition().getX() - 10)
             }
             if (sprite.getPosition().getY() <= 0) {
                 sprite.getPosition().setY(sprite.getPosition().getY() + 10)
             }
-            if (sprite.getPosition().getY() >= 3200) {
+            if (sprite.getPosition().getY() >= worldHeight) {
                 sprite.getPosition().setY(sprite.getPosition().getY() - 10)
             }
 

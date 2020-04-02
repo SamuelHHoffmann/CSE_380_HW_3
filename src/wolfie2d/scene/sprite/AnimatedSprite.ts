@@ -9,12 +9,11 @@ export class AnimatedSprite extends SceneObject {
     private frameCounter: number;
     private direction: number;
     private ai: AIBehavior;
+    private hasAI: boolean = false;
 
-
-    public constructor(initSpriteType: AnimatedSpriteType, initState: string, ai: AIBehavior) {
+    public constructor(initSpriteType: AnimatedSpriteType, initState: string) {
         super();
         this.spriteType = initSpriteType;
-        this.ai = ai;
 
         // START RESET
         this.state = initState;
@@ -22,6 +21,16 @@ export class AnimatedSprite extends SceneObject {
         this.frameCounter = 0;
         this.direction = 0;
     }
+
+    public setAI(ai: AIBehavior): void {
+        this.ai = ai;
+        this.hasAI = true;
+    }
+
+    public getAI(): AIBehavior {
+        return this.ai;
+    }
+
 
     public getDirection(): number {
         // this.direction += 1;
@@ -76,10 +85,10 @@ export class AnimatedSprite extends SceneObject {
         }
 
 
-
-        this.ai.update();
-        this.ai.resolveState(this);
-
+        if (this.hasAI == true) {
+            this.ai.update();
+            this.ai.resolveState(this);
+        }
     }
 
     public contains(pointX: number, pointY: number): boolean {

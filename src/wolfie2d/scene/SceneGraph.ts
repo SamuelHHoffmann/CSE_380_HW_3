@@ -24,6 +24,12 @@ export class SceneGraph {
     // THE VIEWPORT IS USED TO FILTER OUT WHAT IS NOT VISIBLE
     private viewport: Viewport;
 
+
+    private player: AnimatedSprite;
+
+    private mouse: number[] = [0, 0];
+
+
     public constructor() {
         // DEFAULT CONSTRUCTOR INITIALIZES OUR DATA STRUCTURES
         this.clear();
@@ -34,6 +40,23 @@ export class SceneGraph {
         this.visibleSet = [];
         this.tiledLayers = [];
         this.tileSets = [];
+    }
+
+    public setMouse(x : number, y : number): void{
+        this.mouse[0] = x;
+        this.mouse[1] = y
+    }
+
+    public getMouse() : number[]{
+        return this.mouse;
+    }
+
+    public setPlayer(sprite: AnimatedSprite): void {
+        this.player = sprite;
+    }
+
+    public getPlayer(): AnimatedSprite {
+        return this.player;
     }
 
     public addTileSet(tileSetToAdd: TileSet): number {
@@ -128,8 +151,8 @@ export class SceneGraph {
         let spritesInRange: AnimatedSprite[] = [];
 
         for (let sprite of this.animatedSprites) {
-            if (sprite.getPosition().getX() >= xPos && sprite.getPosition().getX() <= xPos + (range * 2)) {
-                if (sprite.getPosition().getY() >= yPos && sprite.getPosition().getY() <= yPos + (range * 2)) {
+            if (sprite.getPosition().getX() + sprite.getSpriteType().getSpriteWidth() >= xPos && sprite.getPosition().getX() <= xPos + range) {
+                if (sprite.getPosition().getY() - sprite.getSpriteType().getSpriteHeight() <= yPos && sprite.getPosition().getY() >= yPos - range) {
                     spritesInRange.push(sprite);
                 }
             }
