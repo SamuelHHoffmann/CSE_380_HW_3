@@ -7,8 +7,6 @@ import { AnimatedSprite } from "../scene/sprite/AnimatedSprite";
 
 export class RandomWalkAI extends AIBehavior {
 
-
-
     constructor(scene: SceneGraph) {
         super(scene);
         this.setBehavior(this.generatePattern());
@@ -31,27 +29,28 @@ export class RandomWalkAI extends AIBehavior {
             if (sprite.getState() != "WALKING") {
                 sprite.setState("WALKING");
             }
-
+            if (sprite.getPosition().getX() <= 0) {
+                sprite.getPosition().setX(sprite.getPosition().getX() + 10)
+            }
+            if (sprite.getPosition().getX() >= 3200) {
+                sprite.getPosition().setX(sprite.getPosition().getX() - 10)
+            }
+            if (sprite.getPosition().getY() <= 0) {
+                sprite.getPosition().setY(sprite.getPosition().getY() + 10)
+            }
+            if (sprite.getPosition().getY() >= 3200) {
+                sprite.getPosition().setY(sprite.getPosition().getY() - 10)
+            }
 
             switch (sprite.getDirection()) {
                 case 0:
                     sprite.getPosition().setY(sprite.getPosition().getY() - 1);
                     break;
                 case 90:
-                    if (sprite.getLeft() == 0) {
-                        sprite.setDirection(270);
-                        sprite.getPosition().setX(sprite.getPosition().getX() + 1);
-                    } else {
-                        sprite.getPosition().setX(sprite.getPosition().getX() - 1);
-                    }
+                    sprite.getPosition().setX(sprite.getPosition().getX() - 1);
                     break;
                 case 180:
-                    if (sprite.getTop() == 0) {
-                        sprite.setDirection(0);
-                        sprite.getPosition().setY(sprite.getPosition().getY() - 1);
-                    } else {
-                        sprite.getPosition().setY(sprite.getPosition().getY() + 1);
-                    }
+                    sprite.getPosition().setY(sprite.getPosition().getY() + 1);
                     break;
                 case 270:
                     sprite.getPosition().setX(sprite.getPosition().getX() + 1);

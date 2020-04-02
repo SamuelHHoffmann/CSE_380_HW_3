@@ -11,6 +11,7 @@ import { Viewport } from '../wolfie2d/scene/Viewport'
 import { TextToRender, TextRenderer } from '../wolfie2d/rendering/TextRenderer'
 import { AIBehavior } from '../wolfie2d/AI/AIBehavior'
 import { RandomWalkAI } from '../wolfie2d/AI/RandomWalkAI'
+import { PaceRunAI } from '../wolfie2d/AI/PaceRunAI'
 
 // THIS IS THE ENTRY POINT INTO OUR APPLICATION, WE MAKE
 // THE Game OBJECT AND INITIALIZE IT WITH THE CANVASES
@@ -26,16 +27,18 @@ game.getResourceManager().loadScene(DESERT_SCENE_PATH,
     game.getRenderingSystem(),
     function () {
 
-        let sceneGraph: SceneGraph;
+
 
         // ADD ANY CUSTOM STUFF WE NEED HERE, LIKE TEXT RENDERING
         // LET'S ADD A BUNCH OF RANDOM SPRITES
         let world: TiledLayer[] = game.getSceneGraph().getTiledLayers();
         let worldWidth: number = world[0].getColumns() * world[0].getTileSet().getTileWidth();
         let worldHeight: number = world[0].getRows() * world[0].getTileSet().getTileHeight();
+        // let randomX: number = Math.random() * worldWidth;
+        // let randomY: number = Math.random() * worldHeight;
         for (let i = 0; i < 50; i++) {
             let type: AnimatedSpriteType = game.getResourceManager().getAnimatedSpriteType("COCKROACH");
-            let ai: AIBehavior = new RandomWalkAI(sceneGraph);
+            let ai: AIBehavior = new RandomWalkAI(game.getSceneGraph());
             let randomSprite: AnimatedSprite = new AnimatedSprite(type, "IDLE", ai);
             let randomX: number = Math.random() * worldWidth;
             let randomY: number = Math.random() * worldHeight;
@@ -43,32 +46,32 @@ game.getResourceManager().loadScene(DESERT_SCENE_PATH,
             randomSprite.setDirection(90 * Math.floor(Math.random() * 4));
             game.getSceneGraph().addAnimatedSprite(randomSprite);
         }
-        // for (let i = 0; i < 50; i++) {
-        //     let type: AnimatedSpriteType = game.getResourceManager().getAnimatedSpriteType("CAMEL_SPIDER");
-        //     let ai: AIBehavior = new RandomWalkAI(sceneGraph); // make other AI and change class
-        //     let randomSprite: AnimatedSprite = new AnimatedSprite(type, "IDLE", ai);
-        //     let randomX: number = Math.random() * worldWidth;
-        //     let randomY: number = Math.random() * worldHeight;
-        //     randomSprite.getPosition().set(randomX, randomY, 0, 1);
-        //     randomSprite.setDirection(90 * Math.floor(Math.random() * 4));
-        //     game.getSceneGraph().addAnimatedSprite(randomSprite);
-        // }
-
-        //// Testing Code, One bug only
-        // let type: AnimatedSpriteType = game.getResourceManager().getAnimatedSpriteType("COCKROACH");
-        // let ai: AIBehavior = new RandomWalkAI(sceneGraph);
-        // let randomSprite: AnimatedSprite = new AnimatedSprite(type, "IDLE", ai);
-        // let randomX: number = Math.random() * worldWidth;
-        // let randomY: number = Math.random() * worldHeight;
-        // randomSprite.getPosition().set(worldWidth / 5, worldHeight / 8, 0, 1);
-        // randomSprite.setDirection(90 * Math.floor(Math.random() * 4));
-        // game.getSceneGraph().addAnimatedSprite(randomSprite);
+        for (let i = 0; i < 50; i++) {
+            let type: AnimatedSpriteType = game.getResourceManager().getAnimatedSpriteType("CAMEL_SPIDER");
+            let ai: AIBehavior = new PaceRunAI(game.getSceneGraph()); // make other AI and change class
+            let randomSprite: AnimatedSprite = new AnimatedSprite(type, "IDLE", ai);
+            let randomX: number = Math.random() * worldWidth;
+            let randomY: number = Math.random() * worldHeight;
+            randomSprite.getPosition().set(randomX, randomY, 0, 1);
+            randomSprite.setDirection(90 * Math.floor(Math.random() * 4));
+            game.getSceneGraph().addAnimatedSprite(randomSprite);
+        }
+        let type: AnimatedSpriteType = game.getResourceManager().getAnimatedSpriteType("FUNNEL_WEB_SPIDER");
+        let ai: AIBehavior = new RandomWalkAI(game.getSceneGraph());
+        let randomSprite: AnimatedSprite = new AnimatedSprite(type, "IDLE", ai);
+        let randomX: number = Math.random() * worldWidth;
+        let randomY: number = Math.random() * worldHeight;
+        randomSprite.getPosition().set(worldWidth / 5, worldHeight / 8, 0, 1);
+        randomSprite.setDirection(90 * Math.floor(Math.random() * 4));
+        game.getSceneGraph().addAnimatedSprite(randomSprite);
+        console.log(randomSprite.getSpriteType().getSpriteSheetTexture().webGLTextureId);
 
 
         // NOW ADD TEXT RENDERING. WE ARE GOING TO RENDER 3 THINGS:
         // NUMBER OF SPRITES IN THE SCENE
         // LOCATION IN GAME WORLD OF VIEWPORT
         // NUMBER OF SPRITES IN VISIBLE SET (i.e. IN THE VIEWPORT)
+        let sceneGraph: SceneGraph;
         sceneGraph = game.getSceneGraph();
         let spritesInSceneText: TextToRender = new TextToRender("Sprites in Scene", "", 20, 50, function () {
             spritesInSceneText.text = "Sprites in Scene: " + sceneGraph.getNumSprites();

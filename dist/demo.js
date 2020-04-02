@@ -10,6 +10,7 @@ var Game_1 = require("../wolfie2d/Game");
 var AnimatedSprite_1 = require("../wolfie2d/scene/sprite/AnimatedSprite");
 var TextRenderer_1 = require("../wolfie2d/rendering/TextRenderer");
 var RandomWalkAI_1 = require("../wolfie2d/AI/RandomWalkAI");
+var PaceRunAI_1 = require("../wolfie2d/AI/PaceRunAI");
 // THIS IS THE ENTRY POINT INTO OUR APPLICATION, WE MAKE
 // THE Game OBJECT AND INITIALIZE IT WITH THE CANVASES
 var game = new Game_1.Game("game_canvas", "text_canvas");
@@ -19,45 +20,47 @@ var game = new Game_1.Game("game_canvas", "text_canvas");
 // ONCE IT IS COMPLETED WE CAN START THE GAME
 var DESERT_SCENE_PATH = "resources/scenes/ScrollableDesert.json";
 game.getResourceManager().loadScene(DESERT_SCENE_PATH, game.getSceneGraph(), game.getRenderingSystem(), function () {
-    var sceneGraph = void 0;
     // ADD ANY CUSTOM STUFF WE NEED HERE, LIKE TEXT RENDERING
     // LET'S ADD A BUNCH OF RANDOM SPRITES
     var world = game.getSceneGraph().getTiledLayers();
     var worldWidth = world[0].getColumns() * world[0].getTileSet().getTileWidth();
     var worldHeight = world[0].getRows() * world[0].getTileSet().getTileHeight();
-    for (var i = 0; i < 50; i++) {
-        var type = game.getResourceManager().getAnimatedSpriteType("COCKROACH");
-        var ai = new RandomWalkAI_1.RandomWalkAI(sceneGraph);
-        var randomSprite = new AnimatedSprite_1.AnimatedSprite(type, "IDLE", ai);
-        var randomX = Math.random() * worldWidth;
-        var randomY = Math.random() * worldHeight;
-        randomSprite.getPosition().set(randomX, randomY, 0, 1);
-        randomSprite.setDirection(90 * Math.floor(Math.random() * 4));
-        game.getSceneGraph().addAnimatedSprite(randomSprite);
-    }
-    // for (let i = 0; i < 50; i++) {
-    //     let type: AnimatedSpriteType = game.getResourceManager().getAnimatedSpriteType("CAMEL_SPIDER");
-    //     let ai: AIBehavior = new RandomWalkAI(sceneGraph); // make other AI and change class
-    //     let randomSprite: AnimatedSprite = new AnimatedSprite(type, "IDLE", ai);
-    //     let randomX: number = Math.random() * worldWidth;
-    //     let randomY: number = Math.random() * worldHeight;
-    //     randomSprite.getPosition().set(randomX, randomY, 0, 1);
-    //     randomSprite.setDirection(90 * Math.floor(Math.random() * 4));
-    //     game.getSceneGraph().addAnimatedSprite(randomSprite);
-    // }
-    //// Testing Code, One bug only
-    // let type: AnimatedSpriteType = game.getResourceManager().getAnimatedSpriteType("COCKROACH");
-    // let ai: AIBehavior = new RandomWalkAI(sceneGraph);
-    // let randomSprite: AnimatedSprite = new AnimatedSprite(type, "IDLE", ai);
     // let randomX: number = Math.random() * worldWidth;
     // let randomY: number = Math.random() * worldHeight;
-    // randomSprite.getPosition().set(worldWidth / 5, worldHeight / 8, 0, 1);
-    // randomSprite.setDirection(90 * Math.floor(Math.random() * 4));
-    // game.getSceneGraph().addAnimatedSprite(randomSprite);
+    for (var i = 0; i < 50; i++) {
+        var _type = game.getResourceManager().getAnimatedSpriteType("COCKROACH");
+        var _ai = new RandomWalkAI_1.RandomWalkAI(game.getSceneGraph());
+        var _randomSprite = new AnimatedSprite_1.AnimatedSprite(_type, "IDLE", _ai);
+        var _randomX = Math.random() * worldWidth;
+        var _randomY = Math.random() * worldHeight;
+        _randomSprite.getPosition().set(_randomX, _randomY, 0, 1);
+        _randomSprite.setDirection(90 * Math.floor(Math.random() * 4));
+        game.getSceneGraph().addAnimatedSprite(_randomSprite);
+    }
+    for (var _i = 0; _i < 50; _i++) {
+        var _type2 = game.getResourceManager().getAnimatedSpriteType("CAMEL_SPIDER");
+        var _ai2 = new PaceRunAI_1.PaceRunAI(game.getSceneGraph()); // make other AI and change class
+        var _randomSprite2 = new AnimatedSprite_1.AnimatedSprite(_type2, "IDLE", _ai2);
+        var _randomX2 = Math.random() * worldWidth;
+        var _randomY2 = Math.random() * worldHeight;
+        _randomSprite2.getPosition().set(_randomX2, _randomY2, 0, 1);
+        _randomSprite2.setDirection(90 * Math.floor(Math.random() * 4));
+        game.getSceneGraph().addAnimatedSprite(_randomSprite2);
+    }
+    var type = game.getResourceManager().getAnimatedSpriteType("FUNNEL_WEB_SPIDER");
+    var ai = new RandomWalkAI_1.RandomWalkAI(game.getSceneGraph());
+    var randomSprite = new AnimatedSprite_1.AnimatedSprite(type, "IDLE", ai);
+    var randomX = Math.random() * worldWidth;
+    var randomY = Math.random() * worldHeight;
+    randomSprite.getPosition().set(worldWidth / 5, worldHeight / 8, 0, 1);
+    randomSprite.setDirection(90 * Math.floor(Math.random() * 4));
+    game.getSceneGraph().addAnimatedSprite(randomSprite);
+    console.log(randomSprite.getSpriteType().getSpriteSheetTexture().webGLTextureId);
     // NOW ADD TEXT RENDERING. WE ARE GOING TO RENDER 3 THINGS:
     // NUMBER OF SPRITES IN THE SCENE
     // LOCATION IN GAME WORLD OF VIEWPORT
     // NUMBER OF SPRITES IN VISIBLE SET (i.e. IN THE VIEWPORT)
+    var sceneGraph = void 0;
     sceneGraph = game.getSceneGraph();
     var spritesInSceneText = new TextRenderer_1.TextToRender("Sprites in Scene", "", 20, 50, function () {
         spritesInSceneText.text = "Sprites in Scene: " + sceneGraph.getNumSprites();
@@ -81,7 +84,7 @@ game.getResourceManager().loadScene(DESERT_SCENE_PATH, game.getSceneGraph(), gam
     game.start();
 });
 
-},{"../wolfie2d/AI/RandomWalkAI":3,"../wolfie2d/Game":4,"../wolfie2d/rendering/TextRenderer":10,"../wolfie2d/scene/sprite/AnimatedSprite":20}],2:[function(require,module,exports){
+},{"../wolfie2d/AI/PaceRunAI":3,"../wolfie2d/AI/RandomWalkAI":4,"../wolfie2d/Game":5,"../wolfie2d/rendering/TextRenderer":11,"../wolfie2d/scene/sprite/AnimatedSprite":21}],2:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -98,6 +101,7 @@ var State;
     State["TURN_EAST"] = "TURN_EAST";
     State["TURN_WEST"] = "TURN_WEST";
     State["TURN_RAND"] = "TURN_RAND";
+    State["TURN_AROUND"] = "TURN_AROUND";
     State["NONE"] = "NONE";
 })(State = exports.State || (exports.State = {}));
 
@@ -153,6 +157,158 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var AIBehavior_1 = require("./AIBehavior");
+
+var PaceRunAI = function (_AIBehavior_1$AIBehav) {
+    _inherits(PaceRunAI, _AIBehavior_1$AIBehav);
+
+    function PaceRunAI(scene) {
+        _classCallCheck(this, PaceRunAI);
+
+        var _this = _possibleConstructorReturn(this, (PaceRunAI.__proto__ || Object.getPrototypeOf(PaceRunAI)).call(this, scene));
+
+        _this.pacingBehavior = [AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.WALK, AIBehavior_1.State.TURN_AROUND];
+        _this.setBehavior(_this.pacingBehavior);
+        return _this;
+    }
+
+    _createClass(PaceRunAI, [{
+        key: "generatePattern",
+        value: function generatePattern() {
+            var pattern = [AIBehavior_1.State.NONE];
+            return pattern;
+        }
+    }, {
+        key: "resolveState",
+        value: function resolveState(sprite) {
+            var state = this.pattern[this.stateIndex];
+            var player = void 0;
+            var playerInRange = false;
+            var nearSprites = this.scene.spritesInRange(sprite.getPosition().getX() - 178, sprite.getPosition().getY() - 178, 178);
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = nearSprites[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var tempSprite = _step.value;
+
+                    console.log(tempSprite.getSpriteType().getSpriteSheetTexture().webGLTextureId);
+                    if (tempSprite.getSpriteType().getSpriteSheetTexture().webGLTextureId == 3) {
+                        player = tempSprite;
+                        playerInRange = true;
+                    }
+                }
+                // console.log(playerInRange);
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+
+            if (playerInRange == true) {
+                if (player.getPosition().getX() < sprite.getPosition().getX()) {
+                    sprite.setDirection(270);
+                }
+                if (player.getPosition().getX() > sprite.getPosition().getX()) {
+                    sprite.setDirection(90);
+                }
+                if (player.getPosition().getY() < sprite.getPosition().getY()) {
+                    sprite.setDirection(180);
+                }
+                if (player.getPosition().getY() > sprite.getPosition().getY()) {
+                    sprite.setDirection(0);
+                }
+                this.setBehavior([AIBehavior_1.State.RUN]);
+                state = this.pattern[this.stateIndex];
+            }
+            if (state == AIBehavior_1.State.WALK) {
+                if (sprite.getState() != "WALKING") {
+                    sprite.setState("WALKING");
+                }
+                if (sprite.getPosition().getX() <= 0) {
+                    sprite.getPosition().setX(sprite.getPosition().getX() + 10);
+                }
+                if (sprite.getPosition().getX() >= 3200) {
+                    sprite.getPosition().setX(sprite.getPosition().getX() - 10);
+                }
+                if (sprite.getPosition().getY() <= 0) {
+                    sprite.getPosition().setY(sprite.getPosition().getY() + 10);
+                }
+                if (sprite.getPosition().getY() >= 3200) {
+                    sprite.getPosition().setY(sprite.getPosition().getY() - 10);
+                }
+                switch (sprite.getDirection()) {
+                    case 0:
+                        sprite.getPosition().setY(sprite.getPosition().getY() - 1);
+                        break;
+                    case 90:
+                        sprite.getPosition().setX(sprite.getPosition().getX() - 1);
+                        break;
+                    case 180:
+                        sprite.getPosition().setY(sprite.getPosition().getY() + 1);
+                        break;
+                    case 270:
+                        sprite.getPosition().setX(sprite.getPosition().getX() + 1);
+                        break;
+                    default:
+                        // console.error("illegal sprite direction", sprite.getDirection());
+                        break;
+                }
+            } else if (state == AIBehavior_1.State.TURN_AROUND) {
+                sprite.setDirection(sprite.getDirection() + 180);
+            } else if (state == AIBehavior_1.State.RUN) {
+                switch (sprite.getDirection()) {
+                    case 0:
+                        sprite.getPosition().setY(sprite.getPosition().getY() - 10);
+                        break;
+                    case 90:
+                        sprite.getPosition().setX(sprite.getPosition().getX() - 10);
+                        break;
+                    case 180:
+                        sprite.getPosition().setY(sprite.getPosition().getY() + 10);
+                        break;
+                    case 270:
+                        sprite.getPosition().setX(sprite.getPosition().getX() + 10);
+                        break;
+                    default:
+                        // console.error("illegal sprite direction", sprite.getDirection());
+                        break;
+                }
+                if (playerInRange == false) {
+                    sprite.setDirection(sprite.getDirection() + 90);
+                    this.setBehavior(this.pacingBehavior);
+                }
+            }
+        }
+    }]);
+
+    return PaceRunAI;
+}(AIBehavior_1.AIBehavior);
+
+exports.PaceRunAI = PaceRunAI;
+
+},{"./AIBehavior":2}],4:[function(require,module,exports){
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var AIBehavior_1 = require("./AIBehavior");
 var AIBehavior_2 = require("./AIBehavior");
 
 var RandomWalkAI = function (_AIBehavior_1$AIBehav) {
@@ -185,25 +341,27 @@ var RandomWalkAI = function (_AIBehavior_1$AIBehav) {
                 if (sprite.getState() != "WALKING") {
                     sprite.setState("WALKING");
                 }
+                if (sprite.getPosition().getX() <= 0) {
+                    sprite.getPosition().setX(sprite.getPosition().getX() + 10);
+                }
+                if (sprite.getPosition().getX() >= 3200) {
+                    sprite.getPosition().setX(sprite.getPosition().getX() - 10);
+                }
+                if (sprite.getPosition().getY() <= 0) {
+                    sprite.getPosition().setY(sprite.getPosition().getY() + 10);
+                }
+                if (sprite.getPosition().getY() >= 3200) {
+                    sprite.getPosition().setY(sprite.getPosition().getY() - 10);
+                }
                 switch (sprite.getDirection()) {
                     case 0:
                         sprite.getPosition().setY(sprite.getPosition().getY() - 1);
                         break;
                     case 90:
-                        if (sprite.getLeft() == 0) {
-                            sprite.setDirection(270);
-                            sprite.getPosition().setX(sprite.getPosition().getX() + 1);
-                        } else {
-                            sprite.getPosition().setX(sprite.getPosition().getX() - 1);
-                        }
+                        sprite.getPosition().setX(sprite.getPosition().getX() - 1);
                         break;
                     case 180:
-                        if (sprite.getTop() == 0) {
-                            sprite.setDirection(0);
-                            sprite.getPosition().setY(sprite.getPosition().getY() - 1);
-                        } else {
-                            sprite.getPosition().setY(sprite.getPosition().getY() + 1);
-                        }
+                        sprite.getPosition().setY(sprite.getPosition().getY() + 1);
                         break;
                     case 270:
                         sprite.getPosition().setX(sprite.getPosition().getX() + 1);
@@ -228,7 +386,7 @@ var RandomWalkAI = function (_AIBehavior_1$AIBehav) {
 
 exports.RandomWalkAI = RandomWalkAI;
 
-},{"./AIBehavior":2}],4:[function(require,module,exports){
+},{"./AIBehavior":2}],5:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -337,7 +495,7 @@ var Game = function (_GameLoopTemplate_1$G) {
 
 exports.Game = Game;
 
-},{"./files/ResourceManager":5,"./loop/GameLoopTemplate":6,"./rendering/WebGLGameRenderingSystem":12,"./scene/SceneGraph":17,"./scene/Viewport":19,"./ui/UIController":24}],5:[function(require,module,exports){
+},{"./files/ResourceManager":6,"./loop/GameLoopTemplate":7,"./rendering/WebGLGameRenderingSystem":13,"./scene/SceneGraph":18,"./scene/Viewport":20,"./ui/UIController":25}],6:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -704,7 +862,7 @@ var ResourceManager = function () {
 
 exports.ResourceManager = ResourceManager;
 
-},{"../rendering/WebGLGameTexture":15,"../scene/sprite/AnimatedSpriteType":21,"../scene/tiles/TileSet":22,"../scene/tiles/TiledLayer":23}],6:[function(require,module,exports){
+},{"../rendering/WebGLGameTexture":16,"../scene/sprite/AnimatedSpriteType":22,"../scene/tiles/TileSet":23,"../scene/tiles/TiledLayer":24}],7:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1187,7 +1345,7 @@ var GameLoopTemplate = function () {
 
 exports.GameLoopTemplate = GameLoopTemplate;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -1487,7 +1645,7 @@ var MathUtilities;
     MathUtilities.subtractVectors = subtractVectors;
 })(MathUtilities = exports.MathUtilities || (exports.MathUtilities = {}));
 
-},{"./Matrix":8}],8:[function(require,module,exports){
+},{"./Matrix":9}],9:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1585,7 +1743,7 @@ var Matrix = function () {
 
 exports.Matrix = Matrix;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1723,7 +1881,7 @@ var Vector3 = function () {
 
 exports.Vector3 = Vector3;
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1809,7 +1967,7 @@ var TextRenderer = function () {
 
 exports.TextRenderer = TextRenderer;
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1903,7 +2061,7 @@ var WebGLGameRenderingComponent = function () {
 
 exports.WebGLGameRenderingComponent = WebGLGameRenderingComponent;
 
-},{"../math/Matrix":8,"../math/Vector3":9,"./WebGLGameShader":13}],12:[function(require,module,exports){
+},{"../math/Matrix":9,"../math/Vector3":10,"./WebGLGameShader":14}],13:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2051,7 +2209,7 @@ var WebGLGameRenderingSystem = function () {
 
 exports.WebGLGameRenderingSystem = WebGLGameRenderingSystem;
 
-},{"./TextRenderer":10,"./WebGLGameSpriteRenderer":14,"./WebGLGameTiledLayerRenderer":16}],13:[function(require,module,exports){
+},{"./TextRenderer":11,"./WebGLGameSpriteRenderer":15,"./WebGLGameTiledLayerRenderer":17}],14:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2127,7 +2285,7 @@ var WebGLGameShader = function () {
 
 exports.WebGLGameShader = WebGLGameShader;
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2307,7 +2465,7 @@ var WebGLGameSpriteRenderer = function (_WebGLGameRenderingCo) {
 
 exports.WebGLGameSpriteRenderer = WebGLGameSpriteRenderer;
 
-},{"../math/MathUtilities":7,"./WebGLGameRenderingComponent":11}],15:[function(require,module,exports){
+},{"../math/MathUtilities":8,"./WebGLGameRenderingComponent":12}],16:[function(require,module,exports){
 "use strict";
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2320,7 +2478,7 @@ var WebGLGameTexture = function WebGLGameTexture() {
 
 exports.WebGLGameTexture = WebGLGameTexture;
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2420,7 +2578,7 @@ var WebGLGameTiledLayerRenderer = function (_WebGLGameRenderingCo) {
 
 exports.WebGLGameTiledLayerRenderer = WebGLGameTiledLayerRenderer;
 
-},{"./WebGLGameRenderingComponent":11}],17:[function(require,module,exports){
+},{"./WebGLGameRenderingComponent":12}],18:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2582,8 +2740,12 @@ var SceneGraph = function () {
                 for (var _iterator3 = this.animatedSprites[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
                     var sprite = _step3.value;
 
-                    // if (sprite.getLeft() >= this.viewport.getX() && sprite.getLeft() <= this.viewport.getX() + this.viewport.getWidth()) {
-                    //     if (sprite.getTop() >= this.viewport.getY() && sprite.getTop() <= this.viewport.getY() + this.viewport.getHeight()) {
+                    // if (sprite.getPosition().getX() + sprite.getSpriteType().getSpriteWidth() >= this.viewport.getX()) {
+                    //     if (sprite.getPosition().getX() <= this.viewport.getX() + this.viewport.getWidth()) {
+                    //         if (sprite.getPosition().getY() + sprite.getSpriteType().getSpriteHeight() >= this.viewport.getY()) {
+                    //             if (sprite.getPosition().getY() <= this.viewport.getY() + this.viewport.getHeight()) {
+                    //             }
+                    //         }
                     //     }
                     // }
                     this.visibleSet.push(sprite);
@@ -2605,6 +2767,41 @@ var SceneGraph = function () {
 
             return this.visibleSet;
         }
+    }, {
+        key: "spritesInRange",
+        value: function spritesInRange(xPos, yPos, range) {
+            var spritesInRange = [];
+            var _iteratorNormalCompletion4 = true;
+            var _didIteratorError4 = false;
+            var _iteratorError4 = undefined;
+
+            try {
+                for (var _iterator4 = this.animatedSprites[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                    var sprite = _step4.value;
+
+                    if (sprite.getPosition().getX() >= xPos && sprite.getPosition().getX() <= xPos + range * 2) {
+                        if (sprite.getPosition().getY() >= yPos && sprite.getPosition().getY() <= yPos + range * 2) {
+                            spritesInRange.push(sprite);
+                        }
+                    }
+                }
+            } catch (err) {
+                _didIteratorError4 = true;
+                _iteratorError4 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                        _iterator4.return();
+                    }
+                } finally {
+                    if (_didIteratorError4) {
+                        throw _iteratorError4;
+                    }
+                }
+            }
+
+            return spritesInRange;
+        }
     }]);
 
     return SceneGraph;
@@ -2612,7 +2809,7 @@ var SceneGraph = function () {
 
 exports.SceneGraph = SceneGraph;
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2665,7 +2862,7 @@ var SceneObject = function () {
 
 exports.SceneObject = SceneObject;
 
-},{"../math/Vector3":9}],19:[function(require,module,exports){
+},{"../math/Vector3":10}],20:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2723,7 +2920,7 @@ var Viewport = function () {
 
 exports.Viewport = Viewport;
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2810,7 +3007,7 @@ var AnimatedSprite = function (_SceneObject_1$SceneO) {
                 }
                 this.frameCounter = 0;
             }
-            console.log(this.ai.update());
+            this.ai.update();
             this.ai.resolveState(this);
         }
     }, {
@@ -2853,7 +3050,7 @@ var AnimatedSprite = function (_SceneObject_1$SceneO) {
 
 exports.AnimatedSprite = AnimatedSprite;
 
-},{"../SceneObject":18}],21:[function(require,module,exports){
+},{"../SceneObject":19}],22:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2937,7 +3134,7 @@ var AnimatedSpriteType = function () {
 
 exports.AnimatedSpriteType = AnimatedSpriteType;
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3019,7 +3216,7 @@ var TileSet = function () {
 
 exports.TileSet = TileSet;
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3128,7 +3325,7 @@ var TiledLayer = function () {
 
 exports.TiledLayer = TiledLayer;
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }

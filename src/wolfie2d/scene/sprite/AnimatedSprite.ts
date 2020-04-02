@@ -77,7 +77,7 @@ export class AnimatedSprite extends SceneObject {
 
 
 
-        console.log(this.ai.update());
+        this.ai.update();
         this.ai.resolveState(this);
 
     }

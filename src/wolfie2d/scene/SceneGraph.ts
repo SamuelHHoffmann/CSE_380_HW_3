@@ -109,9 +109,13 @@ export class SceneGraph {
 
         // PUT ALL THE SCENE OBJECTS INTO THE VISIBLE SET
         for (let sprite of this.animatedSprites) {
-            // if (sprite.getLeft() >= this.viewport.getX() && sprite.getLeft() <= this.viewport.getX() + this.viewport.getWidth()) {
-            //     if (sprite.getTop() >= this.viewport.getY() && sprite.getTop() <= this.viewport.getY() + this.viewport.getHeight()) {
+            // if (sprite.getPosition().getX() + sprite.getSpriteType().getSpriteWidth() >= this.viewport.getX()) {
+            //     if (sprite.getPosition().getX() <= this.viewport.getX() + this.viewport.getWidth()) {
+            //         if (sprite.getPosition().getY() + sprite.getSpriteType().getSpriteHeight() >= this.viewport.getY()) {
+            //             if (sprite.getPosition().getY() <= this.viewport.getY() + this.viewport.getHeight()) {
 
+            //             }
+            //         }
             //     }
             // }
             this.visibleSet.push(sprite);
@@ -119,4 +123,19 @@ export class SceneGraph {
 
         return this.visibleSet;
     }
+
+    public spritesInRange(xPos: number, yPos: number, range: number): AnimatedSprite[] {
+        let spritesInRange: AnimatedSprite[] = [];
+
+        for (let sprite of this.animatedSprites) {
+            if (sprite.getPosition().getX() >= xPos && sprite.getPosition().getX() <= xPos + (range * 2)) {
+                if (sprite.getPosition().getY() >= yPos && sprite.getPosition().getY() <= yPos + (range * 2)) {
+                    spritesInRange.push(sprite);
+                }
+            }
+        }
+        return spritesInRange;
+    }
+
+
 }

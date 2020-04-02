@@ -9,6 +9,7 @@ export enum State {
     TURN_EAST = "TURN_EAST",
     TURN_WEST = "TURN_WEST",
     TURN_RAND = "TURN_RAND",
+    TURN_AROUND = "TURN_AROUND",
     NONE = "NONE",
 }
 
