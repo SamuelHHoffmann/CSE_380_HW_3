@@ -61,6 +61,38 @@ export class PaceRunAI extends AIBehavior {
             if (sprite.getState() != "WALKING") {
                 sprite.setState("WALKING");
             }
+
+
+            // let newY: number = 0;
+            // let newX: number = 0;
+            // let xStop: boolean = false;
+            // let yStop: boolean = false;
+
+            // switch (sprite.getDirection()) {
+            //     case 0:
+            //         newY = (sprite.getPosition().getY() - 1);
+            //         break;
+            //     case 90:
+            //         newX = (sprite.getPosition().getX() - 1);
+            //         break;
+            //     case 180:
+            //         newY = (sprite.getPosition().getY() + 1);
+            //         break;
+            //     case 270:
+            //         newX = (sprite.getPosition().getX() + 1);
+            //         break;
+            //     default:
+            //         // console.error("illegal sprite direction", sprite.getDirection());
+            //         break;
+            // }
+
+            // if (!(newX <= 0 || newX >= worldWidth)) {
+            //     sprite.getPosition().setX(newX);
+            // }
+            // if (!(newY <= 0 || newY >= worldHeight)) {
+            //     sprite.getPosition().setY(newY);
+            // }
+
             if (sprite.getPosition().getX() <= 0) {
                 sprite.getPosition().setX(sprite.getPosition().getX() + 10)
             }
@@ -96,16 +128,16 @@ export class PaceRunAI extends AIBehavior {
         } else if (state == State.RUN) {
             switch (sprite.getDirection()) {
                 case 0:
-                    sprite.getPosition().setY(sprite.getPosition().getY() - 10);
+                    sprite.getPosition().setY(sprite.getPosition().getY() - 2);
                     break;
                 case 90:
-                    sprite.getPosition().setX(sprite.getPosition().getX() - 10);
+                    sprite.getPosition().setX(sprite.getPosition().getX() - 2);
                     break;
                 case 180:
-                    sprite.getPosition().setY(sprite.getPosition().getY() + 10);
+                    sprite.getPosition().setY(sprite.getPosition().getY() + 2);
                     break;
                 case 270:
-                    sprite.getPosition().setX(sprite.getPosition().getX() + 10);
+                    sprite.getPosition().setX(sprite.getPosition().getX() + 2);
                     break;
                 default:
                     // console.error("illegal sprite direction", sprite.getDirection());

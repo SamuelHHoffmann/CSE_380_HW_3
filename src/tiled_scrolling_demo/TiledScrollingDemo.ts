@@ -52,6 +52,7 @@ game.getResourceManager().loadScene(DESERT_SCENE_PATH,
             let type: AnimatedSpriteType = game.getResourceManager().getAnimatedSpriteType("CAMEL_SPIDER");
             let ai: AIBehavior = new PaceRunAI(game.getSceneGraph()); // make other AI and change class
             let randomSprite: AnimatedSprite = new AnimatedSprite(type, "IDLE");
+            console.log(randomSprite.getSpriteType().getSpriteSheetTexture().webGLTextureId);
             randomSprite.setAI(ai);
             let randomX: number = Math.random() * worldWidth;
             let randomY: number = Math.random() * worldHeight;
@@ -65,6 +66,7 @@ game.getResourceManager().loadScene(DESERT_SCENE_PATH,
         let ai: AIBehavior = new PlayerAI(game.getSceneGraph());
         let player: AnimatedSprite = new AnimatedSprite(type, "IDLE");
         player.setAI(ai);
+        player.setIgnoreViewport();
         player.getPosition().set(worldWidth / 5, worldHeight / 8, 0, 1);
         player.setDirection(90 * Math.floor(Math.random() * 4));
         game.getSceneGraph().addAnimatedSprite(player);

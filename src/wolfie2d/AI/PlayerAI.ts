@@ -7,6 +7,8 @@ import { AnimatedSprite } from "../scene/sprite/AnimatedSprite";
 
 export class PlayerAI extends AIBehavior {
 
+    // private flip: boolean = false;
+
     constructor(scene: SceneGraph) {
         super(scene);
         this.setBehavior([State.WALK]);
@@ -30,7 +32,7 @@ export class PlayerAI extends AIBehavior {
         let worldWidth: number = this.scene.getTiledLayers()[0].getColumns() * this.scene.getTiledLayers()[0].getTileSet().getTileWidth();
         let worldHeight: number = this.scene.getTiledLayers()[0].getRows() * this.scene.getTiledLayers()[0].getTileSet().getTileHeight();
 
-        if (deltaX == 0 && deltaY == 0) {
+        if (Math.abs(deltaX) <= 6 && Math.abs(deltaY) <= 6) {
             state = State.NONE;
         }
 
@@ -51,18 +53,21 @@ export class PlayerAI extends AIBehavior {
                 sprite.getPosition().setY(sprite.getPosition().getY() - 10)
             }
 
-            if (deltaX > 0) {
+            let delta1: number = deltaX;
+            let delta2: number = deltaY;
+
+            if (delta1 > 6) {
                 sprite.setDirection(270);
-                sprite.getPosition().setX(sprite.getPosition().getX() + 1);
-            } else if (deltaX < 0) {
+                sprite.getPosition().setX(sprite.getPosition().getX() + 3);
+            } else if (delta1 < -6) {
                 sprite.setDirection(90);
-                sprite.getPosition().setX(sprite.getPosition().getX() - 1);
-            } else if (deltaY > 0) {
+                sprite.getPosition().setX(sprite.getPosition().getX() - 3);
+            } else if (delta2 > 6) {
                 sprite.setDirection(180);
-                sprite.getPosition().setY(sprite.getPosition().getY() + 1);
-            } else if (deltaY < 0) {
+                sprite.getPosition().setY(sprite.getPosition().getY() + 3);
+            } else if (delta2 < -6) {
                 sprite.setDirection(0);
-                sprite.getPosition().setY(sprite.getPosition().getY() - 1);
+                sprite.getPosition().setY(sprite.getPosition().getY() - 3);
             }
 
 
@@ -72,6 +77,7 @@ export class PlayerAI extends AIBehavior {
             if (sprite.getState() != "IDLE") {
                 sprite.setState("IDLE");
             }
+            // this.flip = (Math.floor(Math.random() * 3) == 1);
         }
     }
 }

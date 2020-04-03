@@ -55,6 +55,10 @@ export class WebGLGameSpriteRenderer extends WebGLGameRenderingComponent {
         let spriteHeight: number = spriteType.getSpriteHeight();
         let spriteXInPixels: number = sprite.getPosition().getX() + (spriteWidth / 2) - (viewport.getX());
         let spriteYInPixels: number = sprite.getPosition().getY() + (spriteHeight / 2) + (viewport.getY());
+        // if(sprite.getIgnoreViewport() == false){
+        //     spriteXInPixels -= viewport.getX();
+        //     spriteYInPixels += viewport.getY();
+        // }
         let spriteXTranslate: number = (spriteXInPixels - (canvasWidth / 2)) / (canvasWidth / 2);
         let spriteYTranslate: number = (spriteYInPixels - (canvasHeight / 2)) / (canvasHeight / 2);
         this.meshTranslate.setX(spriteXTranslate);

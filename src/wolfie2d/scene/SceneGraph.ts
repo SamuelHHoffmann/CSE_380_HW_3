@@ -2,7 +2,8 @@ import { SceneObject } from './SceneObject'
 import { AnimatedSprite } from './sprite/AnimatedSprite'
 import { TiledLayer } from './tiles/TiledLayer'
 import { TileSet } from './tiles/TileSet'
-import { Viewport } from './Viewport';
+import { Viewport } from './Viewport'
+import { GamePhysics } from '../physics/GamePhysics';
 
 export class SceneGraph {
     // AND ALL OF THE ANIMATED SPRITES, WHICH ARE NOT STORED
@@ -30,6 +31,9 @@ export class SceneGraph {
     private mouse: number[] = [0, 0];
 
 
+    private physicsSystem: GamePhysics = new GamePhysics();
+
+
     public constructor() {
         // DEFAULT CONSTRUCTOR INITIALIZES OUR DATA STRUCTURES
         this.clear();
@@ -42,12 +46,12 @@ export class SceneGraph {
         this.tileSets = [];
     }
 
-    public setMouse(x : number, y : number): void{
+    public setMouse(x: number, y: number): void {
         this.mouse[0] = x;
         this.mouse[1] = y
     }
 
-    public getMouse() : number[]{
+    public getMouse(): number[] {
         return this.mouse;
     }
 
@@ -121,6 +125,7 @@ export class SceneGraph {
      * funcation was called.
      */
     public update(delta: number): void {
+        this.physicsSystem.update(this);
         for (let sprite of this.animatedSprites) {
             sprite.update(delta);
         }

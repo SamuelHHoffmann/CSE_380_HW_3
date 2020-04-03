@@ -9,7 +9,8 @@ export class AnimatedSprite extends SceneObject {
     private frameCounter: number;
     private direction: number;
     private ai: AIBehavior;
-    private hasAI: boolean = false;
+    public hasAI: boolean = false;
+    private ignoreViewport: boolean = false;
 
     public constructor(initSpriteType: AnimatedSpriteType, initState: string) {
         super();
@@ -31,6 +32,13 @@ export class AnimatedSprite extends SceneObject {
         return this.ai;
     }
 
+    public setIgnoreViewport(): void {
+        this.ignoreViewport = true;
+    }
+
+    public getIgnoreViewport(): boolean {
+        return this.ignoreViewport;
+    }
 
     public getDirection(): number {
         // this.direction += 1;
