@@ -15,6 +15,8 @@ export interface SpriteTypeData {
 
 export interface AnimationStateData {
     name: "string";
+    repeat: boolean;
+    next: "string";
     frames: Array<AnimationFrameData>;
 }
 

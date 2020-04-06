@@ -17,27 +17,49 @@ export class GamePhysics {
         // HAS A BOUNDING VOLUME LIKE EITHER AN AABB OR A CIRCLE
 
         let nonPlayerSprites: AnimatedSprite[] = sceneGraph.spritesInRange(
-            sceneGraph.getPlayer().getPosition().getX() - sceneGraph.getPlayer().getSpriteType().getSpriteWidth(),
-            sceneGraph.getPlayer().getPosition().getY() + sceneGraph.getPlayer().getSpriteType().getSpriteHeight(),
-            sceneGraph.getPlayer().getSpriteType().getSpriteWidth() * 3);
+            sceneGraph.getPlayer().getPosition().getX(),
+            sceneGraph.getPlayer().getPosition().getY(),
+            sceneGraph.getPlayer().getSpriteType().getSpriteWidth());
         nonPlayerSprites.splice(nonPlayerSprites.indexOf(sceneGraph.getPlayer()), 1);
 
         let playerBoundingVolume: BoundingCircle = new BoundingCircle(sceneGraph.getPlayer());
         let spriteBoundingCircle: BoundingCircle = new BoundingCircle(sceneGraph.getPlayer());
 
         nonPlayerSprites.forEach(sprite => {
-            spriteBoundingCircle.setX(sprite.getPosition().getX());
-            spriteBoundingCircle.setY(sprite.getPosition().getY());
+            spriteBoundingCircle.setX(sprite.getPosition().getX() - sprite.getSpriteType().getSpriteWidth() / 2);
+            spriteBoundingCircle.setY(sprite.getPosition().getY() + sprite.getSpriteType().getSpriteHeight() / 2);
             spriteBoundingCircle.setRadius(sprite.getSpriteType().getSpriteWidth() / 2, sprite.getSpriteType().getSpriteHeight() / 2);
+            // These bounding Circles are not being used becuase boundign boxes worked better since my sprites only rotate 90 degrees
 
-            if (spriteBoundingCircle.intersects(playerBoundingVolume)) {
-                if (sprite.getSpriteType().getSpriteSheetTexture().webGLTextureId == 4) {
+            if (sprite.getSpriteType().getSpriteSheetTexture().webGLTextureId == 4) {
+                if (sprite.getState() != "DYING" && sprite.getState() != "DEAD") {
                     sprite.setState("DYING");
+                    sprite.kill();
                     if (sprite ? sprite.hasAI : false) {
                         sprite.getAI().setBehavior([State.NONE]);
                     }
                 }
+            } else if (sprite.getSpriteType().getSpriteSheetTexture().webGLTextureId == 5) {
+                switch (sprite.getDirection()) {
+                    case 0:
+                        sprite.getPosition().setY(sprite.getPosition().getY() - 40);
+                        break;
+                    case 90:
+                        sprite.getPosition().setX(sprite.getPosition().getX() - 40);
+                        break;
+                    case 180:
+                        sprite.getPosition().setY(sprite.getPosition().getY() + 40);
+                        break;
+                    case 270:
+                        sprite.getPosition().setX(sprite.getPosition().getX() + 40);
+                        break;
+                    default:
+                        // console.error("illegal sprite direction", sprite.getDirection());
+                        break;
+                }
             }
+
+
         });
 
 

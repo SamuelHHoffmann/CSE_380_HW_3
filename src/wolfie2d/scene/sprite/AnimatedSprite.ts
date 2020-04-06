@@ -10,6 +10,7 @@ export class AnimatedSprite extends SceneObject {
     private direction: number;
     private ai: AIBehavior;
     public hasAI: boolean = false;
+    private dead: boolean = false;
     private ignoreViewport: boolean = false;
 
     public constructor(initSpriteType: AnimatedSpriteType, initState: string) {
@@ -78,6 +79,14 @@ export class AnimatedSprite extends SceneObject {
         this.frameCounter = 0;
     }
 
+    public kill(): void {
+        this.dead = true;
+    }
+
+    public isDead(): boolean {
+        return this.dead;
+    }
+
     public update(delta: number): void {
         this.frameCounter++;
 
@@ -88,6 +97,7 @@ export class AnimatedSprite extends SceneObject {
             this.animationFrameIndex++;
             if (this.animationFrameIndex >= currentAnimation.length) {
                 this.animationFrameIndex = 0;
+                this.setState(this.spriteType.getNext(this.state));
             }
             this.frameCounter = 0;
         }

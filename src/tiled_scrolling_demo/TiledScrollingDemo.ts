@@ -97,11 +97,22 @@ game.getResourceManager().loadScene(DESERT_SCENE_PATH,
         let worldDimensionsText: TextToRender = new TextToRender("World Dimensions", "", 20, 110, function () {
             worldDimensionsText.text = "World Dimensions (w, h): (" + worldWidth + ", " + worldHeight + ")";
         });
+        let spritesAlive: TextToRender = new TextToRender("Sprites Alive", "", 20, 130, function () {
+            spritesAlive.text = "Sprites Alive: " + (sceneGraph.numAlive() - 51);
+        });
+
+        let won: TextToRender = new TextToRender("Won", "", 100, sceneGraph.getViewport().getHeight() / 2, function () {
+            won.text = ((sceneGraph.numAlive() - 51) == 0) ? "Congratulations!!!!! You Won!!!!!" : "";
+            won.fontSize = 72;
+        });
+
         let textRenderer = game.getRenderingSystem().getTextRenderer();
         textRenderer.addTextToRender(spritesInSceneText);
         textRenderer.addTextToRender(viewportText);
         textRenderer.addTextToRender(spritesInViewportText);
         textRenderer.addTextToRender(worldDimensionsText);
+        textRenderer.addTextToRender(spritesAlive);
+        textRenderer.addTextToRender(won);
 
         // AND START THE GAME LOOP
         game.start();

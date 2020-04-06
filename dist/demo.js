@@ -80,11 +80,20 @@ game.getResourceManager().loadScene(DESERT_SCENE_PATH, game.getSceneGraph(), gam
     var worldDimensionsText = new TextRenderer_1.TextToRender("World Dimensions", "", 20, 110, function () {
         worldDimensionsText.text = "World Dimensions (w, h): (" + worldWidth + ", " + worldHeight + ")";
     });
+    var spritesAlive = new TextRenderer_1.TextToRender("Sprites Alive", "", 20, 130, function () {
+        spritesAlive.text = "Sprites Alive: " + (sceneGraph.numAlive() - 51);
+    });
+    var won = new TextRenderer_1.TextToRender("Won", "", 100, sceneGraph.getViewport().getHeight() / 2, function () {
+        won.text = sceneGraph.numAlive() - 51 == 0 ? "Congratulations!!!!! You Won!!!!!" : "";
+        won.fontSize = 72;
+    });
     var textRenderer = game.getRenderingSystem().getTextRenderer();
     textRenderer.addTextToRender(spritesInSceneText);
     textRenderer.addTextToRender(viewportText);
     textRenderer.addTextToRender(spritesInViewportText);
     textRenderer.addTextToRender(worldDimensionsText);
+    textRenderer.addTextToRender(spritesAlive);
+    textRenderer.addTextToRender(won);
     // AND START THE GAME LOOP
     game.start();
 });
@@ -220,19 +229,8 @@ var PaceRunAI = function (_AIBehavior_1$AIBehav) {
             }
 
             if (playerInRange == true) {
-                if (player.getPosition().getX() < sprite.getPosition().getX()) {
-                    sprite.setDirection(270);
-                }
-                if (player.getPosition().getX() > sprite.getPosition().getX()) {
-                    sprite.setDirection(90);
-                }
-                if (player.getPosition().getY() < sprite.getPosition().getY()) {
-                    sprite.setDirection(180);
-                }
-                if (player.getPosition().getY() > sprite.getPosition().getY()) {
-                    sprite.setDirection(0);
-                }
-                this.setBehavior([AIBehavior_1.State.RUN]);
+                sprite.setDirection(player.getDirection());
+                this.setBehavior([AIBehavior_1.State.RUN, AIBehavior_1.State.RUN, AIBehavior_1.State.RUN, AIBehavior_1.State.RUN, AIBehavior_1.State.NONE]);
                 state = this.pattern[this.stateIndex];
             }
             var worldWidth = this.scene.getTiledLayers()[0].getColumns() * this.scene.getTiledLayers()[0].getTileSet().getTileWidth();
@@ -317,6 +315,7 @@ var PaceRunAI = function (_AIBehavior_1$AIBehav) {
                         // console.error("illegal sprite direction", sprite.getDirection());
                         break;
                 }
+            } else if (state = AIBehavior_1.State.NONE) {
                 if (playerInRange == false) {
                     sprite.setDirection(sprite.getDirection() + 90);
                     this.setBehavior(this.pacingBehavior);
@@ -669,7 +668,7 @@ var ResourceManager = function () {
                 var animatedSpriteType = new AnimatedSpriteType_1.AnimatedSpriteType(spritesheetTexture, spriteWidth, spriteHeight);
                 for (var i = 0; i < jsonData.animations.length; i++) {
                     var animation = jsonData.animations[i];
-                    animatedSpriteType.addAnimation(animation.name);
+                    animatedSpriteType.addAnimation(animation.name, !animation.repeat ? animation.next : animation.name);
                     for (var j = 0; j < animation.frames.length; j++) {
                         var frame = animation.frames[j];
                         animatedSpriteType.addAnimationFrame(animation.name, frame.index, frame.duration);
@@ -2119,15 +2118,35 @@ var GamePhysics = function () {
             var playerBoundingVolume = new boundingCircle_1.BoundingCircle(sceneGraph.getPlayer());
             var spriteBoundingCircle = new boundingCircle_1.BoundingCircle(sceneGraph.getPlayer());
             nonPlayerSprites.forEach(function (sprite) {
-                spriteBoundingCircle.setX(sprite.getPosition().getX());
-                spriteBoundingCircle.setY(sprite.getPosition().getY());
+                spriteBoundingCircle.setX(sprite.getPosition().getX() - sprite.getSpriteType().getSpriteWidth() / 2);
+                spriteBoundingCircle.setY(sprite.getPosition().getY() + sprite.getSpriteType().getSpriteHeight() / 2);
                 spriteBoundingCircle.setRadius(sprite.getSpriteType().getSpriteWidth() / 2, sprite.getSpriteType().getSpriteHeight() / 2);
-                if (spriteBoundingCircle.intersects(playerBoundingVolume)) {
-                    if (sprite.getSpriteType().getSpriteSheetTexture().webGLTextureId == 4) {
+                // These bounding Circles are not being used becuase boundign boxes worked better since my sprites only rotate 90 degrees
+                if (sprite.getSpriteType().getSpriteSheetTexture().webGLTextureId == 4) {
+                    if (sprite.getState() != "DYING" && sprite.getState() != "DEAD") {
                         sprite.setState("DYING");
+                        sprite.kill();
                         if (sprite ? sprite.hasAI : false) {
                             sprite.getAI().setBehavior([AIBehavior_1.State.NONE]);
                         }
+                    }
+                } else if (sprite.getSpriteType().getSpriteSheetTexture().webGLTextureId == 5) {
+                    switch (sprite.getDirection()) {
+                        case 0:
+                            sprite.getPosition().setY(sprite.getPosition().getY() - 40);
+                            break;
+                        case 90:
+                            sprite.getPosition().setX(sprite.getPosition().getX() - 40);
+                            break;
+                        case 180:
+                            sprite.getPosition().setY(sprite.getPosition().getY() + 40);
+                            break;
+                        case 270:
+                            sprite.getPosition().setX(sprite.getPosition().getX() + 40);
+                            break;
+                        default:
+                            // console.error("illegal sprite direction", sprite.getDirection());
+                            break;
                     }
                 }
             });
@@ -3027,12 +3046,8 @@ var SceneGraph = function () {
                 for (var _iterator3 = this.animatedSprites[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
                     var sprite = _step3.value;
 
-                    // if (sprite.getPosition().getX() + sprite.getSpriteType().getSpriteWidth() >= this.viewport.getX()) {
-                    //     if (sprite.getPosition().getX() <= this.viewport.getX() + this.viewport.getWidth()) {
-                    //         if (sprite.getPosition().getY() + sprite.getSpriteType().getSpriteHeight() >= this.viewport.getY()) {
-                    //             if (sprite.getPosition().getY() <= this.viewport.getY() + this.viewport.getHeight()) {
-                    //             }
-                    //         }
+                    // if (sprite.getPosition().getX() + sprite.getSpriteType().getSpriteWidth() >= this.viewport.getX() && sprite.getPosition().getX() <= this.viewport.getX() + this.viewport.getWidth()) {
+                    //     if (sprite.getPosition().getY() - sprite.getSpriteType().getSpriteHeight() <= this.viewport.getY() && sprite.getPosition().getY() >= this.viewport.getY() - this.viewport.getHeight()) {
                     //     }
                     // }
                     this.visibleSet.push(sprite);
@@ -3088,6 +3103,39 @@ var SceneGraph = function () {
             }
 
             return spritesInRange;
+        }
+    }, {
+        key: "numAlive",
+        value: function numAlive() {
+            var count = 0;
+            var _iteratorNormalCompletion5 = true;
+            var _didIteratorError5 = false;
+            var _iteratorError5 = undefined;
+
+            try {
+                for (var _iterator5 = this.animatedSprites[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                    var sprite = _step5.value;
+
+                    if (!sprite.isDead()) {
+                        count++;
+                    }
+                }
+            } catch (err) {
+                _didIteratorError5 = true;
+                _iteratorError5 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                        _iterator5.return();
+                    }
+                } finally {
+                    if (_didIteratorError5) {
+                        throw _iteratorError5;
+                    }
+                }
+            }
+
+            return count;
         }
     }]);
 
@@ -3230,6 +3278,7 @@ var AnimatedSprite = function (_SceneObject_1$SceneO) {
         var _this = _possibleConstructorReturn(this, (AnimatedSprite.__proto__ || Object.getPrototypeOf(AnimatedSprite)).call(this));
 
         _this.hasAI = false;
+        _this.dead = false;
         _this.ignoreViewport = false;
         _this.spriteType = initSpriteType;
         // START RESET
@@ -3303,6 +3352,16 @@ var AnimatedSprite = function (_SceneObject_1$SceneO) {
             this.frameCounter = 0;
         }
     }, {
+        key: "kill",
+        value: function kill() {
+            this.dead = true;
+        }
+    }, {
+        key: "isDead",
+        value: function isDead() {
+            return this.dead;
+        }
+    }, {
         key: "update",
         value: function update(delta) {
             this.frameCounter++;
@@ -3313,6 +3372,7 @@ var AnimatedSprite = function (_SceneObject_1$SceneO) {
                 this.animationFrameIndex++;
                 if (this.animationFrameIndex >= currentAnimation.length) {
                     this.animationFrameIndex = 0;
+                    this.setState(this.spriteType.getNext(this.state));
                 }
                 this.frameCounter = 0;
             }
@@ -3386,14 +3446,16 @@ var AnimatedSpriteType = function () {
 
         this.spriteSheetTexture = initSpriteSheetTexture;
         this.animations = new Map();
+        this.nextAnimations = new Map();
         this.spriteWidth = initSpriteWidth;
         this.spriteHeight = initSpriteHeight;
     }
 
     _createClass(AnimatedSpriteType, [{
         key: "addAnimation",
-        value: function addAnimation(state) {
+        value: function addAnimation(state, next) {
             this.animations.set(state, new Array());
+            this.nextAnimations.set(state, next);
         }
     }, {
         key: "addAnimationFrame",
@@ -3437,6 +3499,11 @@ var AnimatedSpriteType = function () {
         value: function getTop(state, frameIndex) {
             var animationFrame = this.animations.get(state)[frameIndex];
             return animationFrame.top;
+        }
+    }, {
+        key: "getNext",
+        value: function getNext(state) {
+            return this.nextAnimations.get(state);
         }
     }]);
 

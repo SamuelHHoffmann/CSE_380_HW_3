@@ -61,7 +61,7 @@ export class ResourceManager {
         return this.gameTextures.get(texturePath);
     }
 
-    public clear() : void {
+    public clear(): void {
         // CLEAR THE SHADER SOURCE 
         this.gameShadersSource.clear();
         this.gameShadersSourcePaths.clear();
@@ -83,10 +83,10 @@ export class ResourceManager {
      * playing the game. These will be used for loading the scene, maps,
      * animated sprites, textures, and shaders.
      */
-    public loadScene(   scenePath: string,
-                        sceneGraph: SceneGraph,
-                        renderingSystem: WebGLGameRenderingSystem,
-                        callback: Function): void {
+    public loadScene(scenePath: string,
+        sceneGraph: SceneGraph,
+        renderingSystem: WebGLGameRenderingSystem,
+        callback: Function): void {
         // CLEAR THE SCENE GRAPH TO GET RID OF ALL THE OLD STUFF
         // THAT MAY HAVE BEEN LOADED FOR SOME OTHER LEVEL
         sceneGraph.clear();
@@ -115,8 +115,8 @@ export class ResourceManager {
         });
     }
 
-    public initAllShaders(  renderingSystem: WebGLGameRenderingSystem,
-                            sceneGraph: SceneGraph): void {
+    public initAllShaders(renderingSystem: WebGLGameRenderingSystem,
+        sceneGraph: SceneGraph): void {
         // SETUP THE SPRITE RENDERER FOR USE WITH THE SPRITE SHADER THAT'S BEEN LOADED
         let spriteRendererVertexShaderSource: string = this.getShaderSource("SPRITE_VERTEX_SHADER");
         let spriteRendererFragmentShaderSource: string = this.getShaderSource("SPRITE_FRAGMENT_SHADER");
@@ -128,9 +128,9 @@ export class ResourceManager {
         renderingSystem.getTiledLayerRenderer().init(renderingSystem.getWebGL(), tiledLayerVertexShaderSource, tiledLayerFragmentShaderSource, sceneGraph.getTiledLayers());
     }
 
-    public loadShadersSource(   renderingSystem: WebGLGameRenderingSystem,
-                                namedPaths: Array<NamedPath>,
-                                callback: Function): void {
+    public loadShadersSource(renderingSystem: WebGLGameRenderingSystem,
+        namedPaths: Array<NamedPath>,
+        callback: Function): void {
         // START BY LOADING ALL THE SHADER SOURCE FILES THESE CAN THEN BE
         // RETRIEVED LATER BY THE RENDERERS WHEN ITS TIME TO BUILD THE 
         // SHADER PROGRAMS
@@ -152,19 +152,19 @@ export class ResourceManager {
         }
     }
 
-    public buildPathToFileInSameDirectory(baseFileWithPath : string, targetFileName : string) : string {
+    public buildPathToFileInSameDirectory(baseFileWithPath: string, targetFileName: string): string {
         let lastIndexOfSlash: number = baseFileWithPath.lastIndexOf('/');
-        let targetFilePath : string = "./";
+        let targetFilePath: string = "./";
         if (lastIndexOfSlash > 0)
             targetFilePath = baseFileWithPath.substring(0, lastIndexOfSlash);
         targetFilePath += "/" + targetFileName;
         return targetFilePath;
     }
 
-    public loadMap( mapPath: string,
-                    renderingSystem: WebGLGameRenderingSystem,
-                    sceneGraph: SceneGraph,
-                    callback: Function): void {
+    public loadMap(mapPath: string,
+        renderingSystem: WebGLGameRenderingSystem,
+        sceneGraph: SceneGraph,
+        callback: Function): void {
         let thisResourceManager: ResourceManager = this;
         this.loadTextFile(mapPath, function (jsonMapText: string) {
             let mapData: MapData = <MapData>JSON.parse(jsonMapText);
@@ -174,23 +174,23 @@ export class ResourceManager {
             let tilesetFilePath = thisResourceManager.buildPathToFileInSameDirectory(mapPath, tilesetFileName);
 
             // USE THE PATHS TOLOAD THE TILE SET TEXTURES
-            thisResourceManager.loadTexture(tilesetFilePath, renderingSystem, function (tilesetTexture : WebGLGameTexture) {
+            thisResourceManager.loadTexture(tilesetFilePath, renderingSystem, function (tilesetTexture: WebGLGameTexture) {
                 // NOW THAT THE TILE SET TEXTURES HAVE BEEN LOADED,
                 // LOAD ALL THEIR ASSOCIATED TILESET DATA
                 for (let i = 0; i < mapData.tilesets.length; i++) {
-                    let tileSetData : TileSetData = mapData.tilesets[i];
-                    let rows : number = Math.ceil(tileSetData.tilecount/tileSetData.columns);
-                    let tileSetToAdd : TileSet = new TileSet(
-                                                    tileSetData.name,
-                                                    tileSetData.columns,
-                                                    rows,
-                                                    tileSetData.tilewidth,
-                                                    tileSetData.tileheight,
-                                                    tileSetData.spacing,
-                                                    tileSetData.imagewidth,
-                                                    tileSetData.imageheight,
-                                                    tileSetData.firstgid - 1,
-                                                    tilesetTexture);                    
+                    let tileSetData: TileSetData = mapData.tilesets[i];
+                    let rows: number = Math.ceil(tileSetData.tilecount / tileSetData.columns);
+                    let tileSetToAdd: TileSet = new TileSet(
+                        tileSetData.name,
+                        tileSetData.columns,
+                        rows,
+                        tileSetData.tilewidth,
+                        tileSetData.tileheight,
+                        tileSetData.spacing,
+                        tileSetData.imagewidth,
+                        tileSetData.imageheight,
+                        tileSetData.firstgid - 1,
+                        tilesetTexture);
                     thisResourceManager.gameTileSets.set(tileSetToAdd.getName(), tileSetToAdd);
                 }
 
@@ -199,18 +199,18 @@ export class ResourceManager {
                 // IN THIS EXAMPLE WE ARE GOING TO KEEP IT SIMPLE
                 // AND ASSUME THERE IS ONLY ONE TILE SET
                 for (let i = 0; i < mapData.layers.length; i++) {
-                    let layerData : TiledLayerData = mapData.layers[i];
+                    let layerData: TiledLayerData = mapData.layers[i];
 
                     // THIS LINE OF CODE IS FUNKY, WE CAN ONLY DO THIS WITH A SINGLE TILE SET,
                     // SO TO MAKE THIS A REAL GAME ENGINE THIS WOULD NEED TO BE FIXED
-                    let layerTileSet : TileSet = thisResourceManager.gameTileSets.values().next().value;
+                    let layerTileSet: TileSet = thisResourceManager.gameTileSets.values().next().value;
 
                     // WE ARE ASSUMING EACH LAYER USES JUST ONE TILE SET, WHICH MIGHT NOT
                     // NECESSARILY BE TRUE. BUT FOR NOW, LET'S JUST MAKE THE LAYERS ALL
                     // USING THE SAME TILE SET, ADD THE TILES, AND THEN ADD THEM TO THE SCENE GRAPH
-                    let tiledLayer : TiledLayer = new TiledLayer(layerData.width, layerData.height,layerTileSet);
+                    let tiledLayer: TiledLayer = new TiledLayer(layerData.width, layerData.height, layerTileSet);
                     for (let j = 0; j < layerData.data.length; j++) {
-                        let tileIndex : number = layerData.data[j] - 1;
+                        let tileIndex: number = layerData.data[j] - 1;
                         tiledLayer.addTile(tileIndex);
                     }
                     sceneGraph.addLayer(tiledLayer);
@@ -243,9 +243,9 @@ export class ResourceManager {
      * Loads all the sprite types listed in the spriteTypePaths argument and once
      * that is done it calls the callback function.
      */
-    public loadSpriteTypes( renderingSystem : WebGLGameRenderingSystem,
-                            spriteTypePaths: Array<NamedPath>,
-                            callback: Function): void {
+    public loadSpriteTypes(renderingSystem: WebGLGameRenderingSystem,
+        spriteTypePaths: Array<NamedPath>,
+        callback: Function): void {
         // THEN LOAD THE TEXTURES WE'LL BE USING
         this.numSpriteTypesToLoad = spriteTypePaths.length;
         this.numSpriteTypesLoaded = 0;
@@ -320,10 +320,10 @@ export class ResourceManager {
      * This function loads a single sprite type resource from a JSON file and upon
      * completion calls the callback function.
      */
-    private loadSpriteType(renderingSystem : WebGLGameRenderingSystem, spriteTypeName: string, jsonFilePath: string, callback: Function): void {
+    private loadSpriteType(renderingSystem: WebGLGameRenderingSystem, spriteTypeName: string, jsonFilePath: string, callback: Function): void {
         let thisResourceManager: ResourceManager = this;
         this.loadTextFile(jsonFilePath, function (jsonText: string) {
-            thisResourceManager.loadSpriteTypeData(renderingSystem, jsonFilePath, jsonText, function(spriteType : AnimatedSpriteType) {
+            thisResourceManager.loadSpriteTypeData(renderingSystem, jsonFilePath, jsonText, function (spriteType: AnimatedSpriteType) {
                 thisResourceManager.gameSpriteTypes.set(spriteTypeName, spriteType);
                 thisResourceManager.gameSpriteTypePaths.set(spriteTypeName, jsonFilePath);
                 callback();
@@ -335,20 +335,20 @@ export class ResourceManager {
      * This helper function loads all the json text into an AnimatedSpriteType
      * object and returns it.
      */
-    private loadSpriteTypeData = (  renderingSystem : WebGLGameRenderingSystem, 
-                                    spriteFilePath : string, 
-                                    jsonText: string,
-                                    callback : Function): void => {
+    private loadSpriteTypeData = (renderingSystem: WebGLGameRenderingSystem,
+        spriteFilePath: string,
+        jsonText: string,
+        callback: Function): void => {
         let jsonData: SpriteTypeData = <SpriteTypeData>JSON.parse(jsonText);
-        let texturePath : string = this.buildPathToFileInSameDirectory(spriteFilePath, jsonData.spriteSheetImage);
-        let thisResourceManager : ResourceManager = this;
-        this.loadTexture(texturePath, renderingSystem, function(spritesheetTexture : WebGLGameTexture) {
+        let texturePath: string = this.buildPathToFileInSameDirectory(spriteFilePath, jsonData.spriteSheetImage);
+        let thisResourceManager: ResourceManager = this;
+        this.loadTexture(texturePath, renderingSystem, function (spritesheetTexture: WebGLGameTexture) {
             let spriteWidth: number = jsonData.spriteWidth;
             let spriteHeight: number = jsonData.spriteHeight;
             let animatedSpriteType = new AnimatedSpriteType(spritesheetTexture, spriteWidth, spriteHeight);
             for (let i = 0; i < jsonData.animations.length; i++) {
                 let animation = <AnimationStateData>jsonData.animations[i];
-                animatedSpriteType.addAnimation(animation.name);
+                animatedSpriteType.addAnimation(animation.name, (!animation.repeat ? animation.next : animation.name));
                 for (var j = 0; j < animation.frames.length; j++) {
                     var frame = animation.frames[j];
                     animatedSpriteType.addAnimationFrame(animation.name, frame.index, frame.duration);

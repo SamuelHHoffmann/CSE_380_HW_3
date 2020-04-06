@@ -37,19 +37,8 @@ export class PaceRunAI extends AIBehavior {
         // console.log(playerInRange);
 
         if (playerInRange == true) {
-            if (player.getPosition().getX() < sprite.getPosition().getX()) {
-                sprite.setDirection(270);
-            }
-            if (player.getPosition().getX() > sprite.getPosition().getX()) {
-                sprite.setDirection(90);
-            }
-            if (player.getPosition().getY() < sprite.getPosition().getY()) {
-                sprite.setDirection(180);
-            }
-            if (player.getPosition().getY() > sprite.getPosition().getY()) {
-                sprite.setDirection(0);
-            }
-            this.setBehavior([State.RUN]);
+            sprite.setDirection(player.getDirection());
+            this.setBehavior([State.RUN, State.RUN, State.RUN, State.RUN, State.NONE]);
             state = this.pattern[this.stateIndex];
         }
 
@@ -143,6 +132,7 @@ export class PaceRunAI extends AIBehavior {
                     // console.error("illegal sprite direction", sprite.getDirection());
                     break;
             }
+        } else if (state = State.NONE) {
             if (playerInRange == false) {
                 sprite.setDirection(sprite.getDirection() + 90);
                 this.setBehavior(this.pacingBehavior);

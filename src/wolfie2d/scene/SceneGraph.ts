@@ -137,13 +137,9 @@ export class SceneGraph {
 
         // PUT ALL THE SCENE OBJECTS INTO THE VISIBLE SET
         for (let sprite of this.animatedSprites) {
-            // if (sprite.getPosition().getX() + sprite.getSpriteType().getSpriteWidth() >= this.viewport.getX()) {
-            //     if (sprite.getPosition().getX() <= this.viewport.getX() + this.viewport.getWidth()) {
-            //         if (sprite.getPosition().getY() + sprite.getSpriteType().getSpriteHeight() >= this.viewport.getY()) {
-            //             if (sprite.getPosition().getY() <= this.viewport.getY() + this.viewport.getHeight()) {
+            // if (sprite.getPosition().getX() + sprite.getSpriteType().getSpriteWidth() >= this.viewport.getX() && sprite.getPosition().getX() <= this.viewport.getX() + this.viewport.getWidth()) {
+            //     if (sprite.getPosition().getY() - sprite.getSpriteType().getSpriteHeight() <= this.viewport.getY() && sprite.getPosition().getY() >= this.viewport.getY() - this.viewport.getHeight()) {
 
-            //             }
-            //         }
             //     }
             // }
             this.visibleSet.push(sprite);
@@ -163,6 +159,16 @@ export class SceneGraph {
             }
         }
         return spritesInRange;
+    }
+
+    public numAlive(): number {
+        let count: number = 0;
+        for (let sprite of this.animatedSprites) {
+            if (!sprite.isDead()) {
+                count++;
+            }
+        }
+        return count;
     }
 
 
